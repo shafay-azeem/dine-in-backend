@@ -14,6 +14,7 @@ const section = require("./routes/MenuRoute");
 
 
 app.use("/api/menu/V1", menu);
+app.use("/api/menu/V1", menu);
 
 app.use("/api/section/V1", section);
 

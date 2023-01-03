@@ -1,5 +1,7 @@
 const Menu = require("../models/MenuModel");
 
+
+//Create Menu Post
 exports.createMenu = (async (req, res, next) => {
     const {
         menuName,
@@ -8,7 +10,6 @@ exports.createMenu = (async (req, res, next) => {
         section,
     } = req.body;
 
-    console.log(req.body, "req.body")
     const menu = await Menu.create({
         menuName,
         menuDescription,
@@ -21,3 +22,15 @@ exports.createMenu = (async (req, res, next) => {
         menu
     });
 });
+
+//Get Single Menu
+exports.getSingleMenu = (async (req, res, next) => {
+    let menuId = req.params.id
+    const menu = await Menu.findById(menuId).populate(
+        "section",
+    );
+    res.status(200).json({
+        success: true,
+        menu
+    });
+})

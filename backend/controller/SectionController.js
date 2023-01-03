@@ -1,9 +1,9 @@
 const Section = require("../models/SectionModel");
 const Menu = require("../models/MenuModel");
 
-exports.createSection = (async (req, res, next) => {
-    let menu = await Menu.findById(req.params.id);
 
+//Create Section Post
+exports.createSection = (async (req, res, next) => {
     const {
         sectionName,
         sectionDescription,
@@ -16,7 +16,7 @@ exports.createSection = (async (req, res, next) => {
         sectionNote,
     });
 
-    await updateStock(req.params.id, section);
+    await updateMenu(req.params.id, section);
 
     res.status(201).json({
         success: true,
@@ -24,9 +24,9 @@ exports.createSection = (async (req, res, next) => {
     });
 });
 
-
-async function updateStock(id, quantity) {
-    let menu = await Menu.findById(id);
-    menu.section.push(quantity)
+//Update Function
+async function updateMenu(menuId, sectionRes) {
+    let menu = await Menu.findById(menuId);
+    menu.section.push(sectionRes)
     await menu.save({ validateBeforeSave: false });
 }

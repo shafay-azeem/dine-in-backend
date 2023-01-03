@@ -15,10 +15,8 @@ const menuSchema = new mongoose.Schema({
     },
 
     section: [{
-
         type: mongoose.Schema.ObjectId,
         ref: "Section",
-
     }
     ],
     createAt: {
