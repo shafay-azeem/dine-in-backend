@@ -1,29 +1,31 @@
 const mongoose = require("mongoose");
 const Section = require("../models/SectionModel");
-
-
+const Item = require("../models/ItemModal");
 
 const menuSchema = new mongoose.Schema({
-    menuName: {
-        type: String,
+  menuName: {
+    type: String,
+  },
+  menuDescription: {
+    type: String,
+  },
+  menuNote: {
+    type: Number,
+  },
+  section: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: "Section",
     },
-    menuDescription: {
-        type: String,
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: "Item",
     },
-    menuNote: {
-        type: Number,
-    },
-
-    section: [{
-        type: mongoose.Schema.ObjectId,
-        ref: "Section",
-    }
-    ],
-    createAt: {
-        type: Date,
-        default: Date.now()
-    }
-})
+  ],
+  createAt: {
+    type: Date,
+    default: Date.now(),
+  },
+});
 
 module.exports = mongoose.model("Menu", menuSchema);
-
