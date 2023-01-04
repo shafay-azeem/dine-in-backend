@@ -80,3 +80,26 @@ async function updateSection(sectionId, itemRes) {
   section.item.push(itemRes);
   await section.save({ validateBeforeSave: false });
 }
+
+//Update Section By Id
+exports.updateSection = async (req, res) => {
+  let section = await Section.findById(req.params.id);
+
+  if (!section) {
+    return res.status(500).json({
+      success: false,
+      message: "Invalid Id",
+    });
+  }
+
+  section = await Section.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+    useUnified: false,
+  });
+
+  res.status(200).json({
+    success: true,
+    section,
+  });
+};

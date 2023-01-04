@@ -66,3 +66,25 @@ exports.deleteMenu = async (req, res) => {
     message: "Menu deleted successfully",
   });
 };
+
+//Update Menu By Id
+exports.updateMenu = async (req, res) => {
+  let menu = await Menu.findById(req.params.id);
+
+  if (!menu) {
+    return res.status(500).json({
+      success: false,
+      message: "Invalid Id",
+    });
+  }
+  menu = await Menu.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+    useUnified: false,
+  });
+
+  res.status(200).json({
+    success: true,
+    menu,
+  });
+};
