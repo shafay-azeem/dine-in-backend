@@ -67,6 +67,16 @@ exports.deleteMenu = async (req, res) => {
   });
 };
 
+//Delete All Menu
+exports.deleteAllMenu = async (req, res) => {
+  let menu = await Menu.deleteMany();
+
+  res.status(200).json({
+    success: true,
+    message: "All Menu Deleted Successfully",
+  });
+};
+
 //Update Menu By Id
 exports.updateMenu = async (req, res) => {
   let menu = await Menu.findById(req.params.id);
@@ -81,6 +91,11 @@ exports.updateMenu = async (req, res) => {
     new: true,
     runValidators: true,
     useUnified: false,
+  }).populate({
+    path: "section", // populate section
+    populate: {
+      path: "item", // in section, populate item
+    },
   });
 
   res.status(200).json({

@@ -47,6 +47,16 @@ exports.deleteSection = async (req, res) => {
   });
 };
 
+//Delete All Section
+exports.deleteAllSection = async (req, res) => {
+  let section = await Section.deleteMany();
+
+  res.status(200).json({
+    success: true,
+    message: "All Section Deleted Successfully",
+  });
+};
+
 //Get All Section ---Get
 exports.getAllSection = async (req, res, next) => {
   const section = await Section.find().populate("item");
@@ -57,29 +67,17 @@ exports.getAllSection = async (req, res, next) => {
   });
 };
 
-//Create Item  ---Post
-exports.createItem = async (req, res, next) => {
-  const { itemName, itemDescription } = req.body;
+//Get Single Section ---Get
+exports.getSingleSection = async (req, res, next) => {
+  let sectionId = req.params.id;
 
-  const item = await Item.create({
-    itemName,
-    itemDescription,
-  });
+  const section = await Section.findById(sectionId).populate("item");
 
-  await updateSection(req.params.id, item);
-
-  res.status(201).json({
+  res.status(200).json({
     success: true,
-    item,
+    section,
   });
 };
-
-//Update Section Function
-async function updateSection(sectionId, itemRes) {
-  let section = await Section.findById(sectionId);
-  section.item.push(itemRes);
-  await section.save({ validateBeforeSave: false });
-}
 
 //Update Section By Id
 exports.updateSection = async (req, res) => {
@@ -96,7 +94,7 @@ exports.updateSection = async (req, res) => {
     new: true,
     runValidators: true,
     useUnified: false,
-  });
+  }).populate("item");
 
   res.status(200).json({
     success: true,
