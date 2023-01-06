@@ -92,23 +92,28 @@ exports.createResultForm = async (req, res, next) => {
     let question = feedbackForm.formQuestions
 
     let allow
-    if (form_name === req.body.formQuestions) {
-        for (let i = 0; i < req.body.response.length; i++) {
-            allow = true
-            let a = question[i].question.toString()
-            let b = req.body.response[i].question.toString()
-            if (a !== b) {
-                allow = false
-                break;
+    if (form_name === req.body.formName) {
+        if (question.length === req.body.response.length) {
+            for (let i = 0; i < req.body.response.length; i++) {
+                allow = true
+                let a = question[i].question.toString()
+                let b = req.body.response[i].question.toString()
+                if (a !== b) {
+                    allow = false
+                    break;
+                }
             }
+        } else {
+            allow = false
         }
+
     }
 
     if (allow === true) {
 
-        const { formQuestions, response } = req.body;
+        const { formName, response } = req.body;
         const formResponse = await FormResponse.create({
-            formQuestions,
+            formName,
             response
         });
 
