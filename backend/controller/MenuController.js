@@ -14,6 +14,7 @@ exports.createMenu = async (req, res, next) => {
 
   res.status(201).json({
     success: true,
+    message: "Menu Created Successfully",
     menu,
   });
 };
@@ -100,6 +101,7 @@ exports.updateMenu = async (req, res) => {
 
   res.status(200).json({
     success: true,
+    message: "Menu Update Successfully",
     menu,
   });
 };
