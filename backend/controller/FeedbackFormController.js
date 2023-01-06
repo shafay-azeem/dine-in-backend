@@ -66,6 +66,25 @@ exports.getSingleForm = async (req, res, next) => {
   });
 };
 
+//Delete Form by Id ---Delete
+exports.deleteForm = async (req, res) => {
+  let feedbackForm = await FeedbackForm.findById(req.params.id);
+
+  if (!feedbackForm) {
+    return res.status(500).json({
+      success: false,
+      message: "Invalid Id",
+    });
+  }
+
+  await feedbackForm.remove();
+
+  res.status(200).json({
+    success: true,
+    message: "feedbackForm deleted successfully",
+  });
+};
+
 //Delete All Form --Delete
 exports.deleteAllForm = async (req, res) => {
   let feedbackForm = await FeedbackForm.deleteMany();
@@ -83,6 +102,25 @@ exports.deleteFormQuestion = async (req, res) => {
   res.status(200).json({
     success: true,
     message: "All Form Question Deleted Successfully",
+  });
+};
+
+//Delete Question by Id ---Delete
+exports.deleteSingleQuestion = async (req, res) => {
+  let formQuestion = await FormQuestion.findById(req.params.id);
+
+  if (!formQuestion) {
+    return res.status(500).json({
+      success: false,
+      message: "Invalid Id",
+    });
+  }
+
+  await formQuestion.remove();
+
+  res.status(200).json({
+    success: true,
+    message: "Question deleted successfully",
   });
 };
 
@@ -106,10 +144,55 @@ exports.createFormQuestion = async (req, res, next) => {
 //Update Form Question Function
 async function updateFormQuestion(formId, formQuestionResponse) {
   let feedbackForm = await FeedbackForm.findById(formId);
-  console.log(feedbackForm, "feedbackForm");
+  //console.log(feedbackForm, "feedbackForm");
   feedbackForm.formQuestions.push(formQuestionResponse);
   await feedbackForm.save({ validateBeforeSave: false });
 }
+
+//Get All Questions --Get
+exports.getAllQuestion = async (req, res, next) => {
+  const formQuestion = await FormQuestion.find();
+
+  res.status(200).json({
+    success: true,
+    formQuestion,
+  });
+};
+
+//Get Single Questions ---Get
+exports.getSingleQuestion = async (req, res, next) => {
+  let questionId = req.params.id;
+
+  const formQuestion = await FormQuestion.findById(questionId);
+
+  res.status(200).json({
+    success: true,
+    formQuestion,
+  });
+};
+
+//Update Question By Id --Put
+exports.updateFormQuestion = async (req, res) => {
+  let formQuestion = await FormQuestion.findById(req.params.id);
+
+  if (!formQuestion) {
+    return res.status(500).json({
+      success: false,
+      message: "Invalid Id",
+    });
+  }
+
+  formQuestion = await FormQuestion.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+    useUnified: false,
+  });
+
+  res.status(200).json({
+    success: true,
+    formQuestion,
+  });
+};
 
 //Create Result Form --Post
 exports.createResultForm = async (req, res, next) => {
@@ -153,4 +236,14 @@ exports.createResultForm = async (req, res, next) => {
       message: "question not match",
     });
   }
+};
+
+//Delete Form Results --Delete
+exports.deleteFormResults = async (req, res) => {
+  let formresponse = await FormResponse.deleteMany();
+
+  res.status(200).json({
+    success: true,
+    message: "All Form Result Deleted Successfully",
+  });
 };
