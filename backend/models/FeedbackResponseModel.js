@@ -1,17 +1,25 @@
 const mongoose = require("mongoose");
 
 const formResponseSchema = new mongoose.Schema({
-    formQuestions:
-    {
-        type: mongoose.Schema.ObjectId,
-        ref: "FormQuestion",
-    },
+    formQuestions: {
+        formName: {
+            type: String
+        },
+        formQuestionsRef: {
+            type: mongoose.Schema.ObjectId,
+            ref: "FormQuestion",
+        },
 
-    responses: [
+
+    },
+    response: [
         {
-            question: {
+            questionRef: {
                 type: mongoose.Schema.ObjectId,
                 ref: "FeedbackForm",
+            },
+            question: {
+                type: String
             },
             answer: {
                 type: String,

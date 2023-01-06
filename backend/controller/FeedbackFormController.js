@@ -1,6 +1,7 @@
 const FeedbackForm = require("../models/FeedbackFormModel");
 const FormQuestion = require("../models/FormQuestionModel");
 const FormResponse = require("../models/FeedbackResponseModel");
+const { all } = require("../app");
 
 
 //Create FeedBack Form --Post
@@ -86,26 +87,46 @@ async function updateFormQuestion(formId, formQuestionResponse) {
 //Create Result Form --Post
 exports.createResultForm = async (req, res, next) => {
 
-    let feedbackForm = await FeedbackForm.findById(req.query.id);
-    // let feedbackForm = await FeedbackForm.findById(req.query.id);
-    // let form_name = feedbackForm.formName
+    let feedbackForm = await FeedbackForm.findById(req.query.id).populate("formQuestions");
+    let form_name = feedbackForm.formName
+    let question = feedbackForm.formQuestions
 
-    console.log(feedbackForm, "feedbackForm")
-    // const { answer } = req.body;
+    let allow
+    if (form_name === req.body.formQuestions) {
+        for (let i = 0; i < req.body.response.length; i++) {
+            allow = true
+            let a = question[i].question.toString()
+            let b = req.body.response[i].question.toString()
+            if (a !== b) {
+                allow = false
+                break;
+            }
+        }
+    }
 
-    // for (let i in req.body.answer) {
+    if (allow === true) {
 
-    // }
+        const { formQuestions, response } = req.body;
+        const formResponse = await FormResponse.create({
+            formQuestions,
+            response
+        });
 
-    // const formResponse = await FormResponse.create({
-    //     form_name,
-    //     answer
-    // });
+        res.status(201).json({
+            success: true,
+            formResponse,
+        })
 
-    res.status(201).json({
-        success: true,
-        // formResponse,
-    });
+    } else {
+        res.status(404).json({
+            success: false,
+            message: "question not match"
+        })
+    }
+
+
+
+
 };
 
 
