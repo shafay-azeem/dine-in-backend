@@ -59,7 +59,14 @@ exports.deleteAllSection = async (req, res) => {
 
 //Get All Section ---Get
 exports.getAllSection = async (req, res, next) => {
-  const section = await Section.find().populate("item").populate("subSection");
+  const section = await Section.find()
+    .populate("item")
+    .populate({
+      path: "subSection", // populate subsectionsection
+      populate: {
+        path: "item", // in section, populate item
+      },
+    });
 
   res.status(200).json({
     success: true,
@@ -73,7 +80,12 @@ exports.getSingleSection = async (req, res, next) => {
 
   const section = await Section.findById(sectionId)
     .populate("item")
-    .populate("subSection");
+    .populate({
+      path: "subSection", // populate subsectionsection
+      populate: {
+        path: "item", // in section, populate item
+      },
+    });
 
   res.status(200).json({
     success: true,

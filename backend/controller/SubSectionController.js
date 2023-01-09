@@ -1,4 +1,4 @@
-const SubSection = require("../models/SubSectionModal");
+const SubSection = require("../models/SubSectionModel");
 const Section = require("../models/SectionModel");
 
 //Create Sub Section ---Post
@@ -57,7 +57,7 @@ exports.deleteAllSubSection = async (req, res) => {
 
 //Get All Sub Section ---Get
 exports.getAllSubSection = async (req, res, next) => {
-  const subSection = await SubSection.find();
+  const subSection = await SubSection.find().populate("item");
 
   res.status(200).json({
     success: true,
@@ -69,7 +69,7 @@ exports.getAllSubSection = async (req, res, next) => {
 exports.getSingleSubSection = async (req, res, next) => {
   let subSectionId = req.params.id;
 
-  const subSection = await SubSection.findById(subSectionId);
+  const subSection = await SubSection.findById(subSectionId).populate("item");
 
   res.status(200).json({
     success: true,
