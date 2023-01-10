@@ -35,6 +35,7 @@ const {
   createSubSectionItem,
   deleteAllSubItem,
   getAllSubItem,
+  getSingleSubItem,
 } = require("../controller/SubSectionItemController");
 
 const router = express.Router();
@@ -69,7 +70,7 @@ router.route("/updateSubSection/:id").put(updateSubSection);
 
 //Sub Section Item
 router.route("/createSubSectionItem/:id").post(createSubSectionItem);
-// router.route("/getsingleitem/:id").get(getSingleItem);
+router.route("/getSingleSubItem/:id").get(getSingleSubItem);
 router.route("/getAllSubItem").get(getAllSubItem);
 // router.route("/itemdelete/:id").delete(deleteItem);
 router.route("/deleteAllSubItem").delete(deleteAllSubItem);

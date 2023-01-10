@@ -44,3 +44,15 @@ exports.getAllSubItem = async (req, res, next) => {
     subSectionItem,
   });
 };
+
+//Get Single Section ---Get
+exports.getSingleSubItem = async (req, res, next) => {
+  let subItemId = req.params.id;
+
+  const subSectionItem = await SubSectionItem.findById(subItemId);
+
+  res.status(200).json({
+    success: true,
+    subSectionItem,
+  });
+};
