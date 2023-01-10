@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const SubSectionItem = require("../models/SubSectionItemModel");
+const Item = require("../models/ItemModal");
 
 const subSectionSchema = new mongoose.Schema({
   sectionName: {
@@ -14,7 +14,7 @@ const subSectionSchema = new mongoose.Schema({
   item: [
     {
       type: mongoose.Schema.ObjectId,
-      ref: "SubSectionItem",
+      ref: "Item",
     },
   ],
 

@@ -1,9 +1,11 @@
 const Item = require("../models/ItemModal");
 const Section = require("../models/SectionModel");
+const SubSection = require("../models/SubSectionModel");
 
 //Create Item  ---Post
 exports.createItem = async (req, res, next) => {
-  const { itemName,
+  const {
+    itemName,
     itemDescription,
     active,
     itemCalorie,
@@ -37,7 +39,8 @@ exports.createItem = async (req, res, next) => {
     itemNutritionCalories,
     itemCaloriesFat,
     itemServingSize,
-    itemModifier, } = req.body;
+    itemModifier,
+  } = req.body;
 
   const item = await Item.create({
     itemName,
@@ -75,7 +78,6 @@ exports.createItem = async (req, res, next) => {
     itemCaloriesFat,
     itemServingSize,
     itemModifier,
-
   });
 
   await updateSection(req.params.id, item);
@@ -87,10 +89,19 @@ exports.createItem = async (req, res, next) => {
 };
 
 //Update Section Function
-async function updateSection(sectionId, itemRes) {
-  let section = await Section.findById(sectionId);
-  section.item.push(itemRes);
-  await section.save({ validateBeforeSave: false });
+async function updateSection(Id, itemRes) {
+  let section = await Section.findById(Id);
+  let subSection = await SubSection.findById(Id);
+
+  if (section) {
+    section.item.push(itemRes);
+    await section.save({ validateBeforeSave: false });
+  } else if (subSection) {
+    subSection.item.push(itemRes);
+    await subSection.save({ validateBeforeSave: false });
+  } else {
+    console.log("invalid id");
+  }
 }
 
 //Get All Item ---Get

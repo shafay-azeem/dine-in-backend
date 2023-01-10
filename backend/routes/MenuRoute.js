@@ -68,11 +68,11 @@ router.route("/getAllSubSection").get(getAllSubSection);
 router.route("/getSingleSubSection/:id").get(getSingleSubSection);
 router.route("/updateSubSection/:id").put(updateSubSection);
 
-//Sub Section Item
-router.route("/createSubSectionItem/:id").post(createSubSectionItem);
-router.route("/getSingleSubItem/:id").get(getSingleSubItem);
-router.route("/getAllSubItem").get(getAllSubItem);
+//Sub Section Item deleted
+// router.route("/createSubSectionItem/:id").post(createSubSectionItem);
+// router.route("/getSingleSubItem/:id").get(getSingleSubItem);
+// router.route("/getAllSubItem").get(getAllSubItem);
 // router.route("/itemdelete/:id").delete(deleteItem);
-router.route("/deleteAllSubItem").delete(deleteAllSubItem);
+// router.route("/deleteAllSubItem").delete(deleteAllSubItem);
 
 module.exports = router;
