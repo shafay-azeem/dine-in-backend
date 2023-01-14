@@ -4,13 +4,15 @@ const Item = require("../models/ItemModal");
 
 //Create Section ---Post
 exports.createSection = async (req, res, next) => {
-  const { sectionName, sectionDescription, sectionNote, item } = req.body;
+  const { sectionName, sectionDescription, sectionNote, item, menuId } =
+    req.body;
 
   const section = await Section.create({
     sectionName,
     sectionDescription,
     sectionNote,
     item,
+    menuId,
   });
 
   await updateMenu(req.params.id, section);
@@ -72,6 +74,29 @@ exports.getAllSection = async (req, res, next) => {
     success: true,
     section,
   });
+};
+
+//Get All Section By Menu Id ---Get
+exports.getAllSectionByMenuId = async (req, res, next) => {
+  let menuId = req.params.id;
+
+  await Section.find({ menuId: { $in: menuId } }).then((section) => {
+    return res.status(200).json({
+      success: true,
+      section,
+    });
+  });
+
+  // const section = await Section.find().then((sec) => {
+  //   const secArr = sec.filter((section) => {
+  //     return section.menuId == menuId;
+  //   });
+
+  //   return res.status(200).json({
+  //     success: true,
+  //     secArr,
+  //   });
+  // });
 };
 
 //Get Single Section ---Get

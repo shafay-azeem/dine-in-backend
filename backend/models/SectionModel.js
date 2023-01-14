@@ -3,6 +3,10 @@ const Item = require("../models/ItemModal");
 const SubSection = require("./SubSectionModel");
 
 const sectionSchema = new mongoose.Schema({
+  menuId: {
+    type: mongoose.Schema.ObjectId,
+    ref: "Menu",
+  },
   sectionName: {
     type: String,
   },

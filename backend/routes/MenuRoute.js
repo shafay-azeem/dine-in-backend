@@ -14,6 +14,7 @@ const {
   updateSection,
   getSingleSection,
   deleteAllSection,
+  getAllSectionByMenuId,
 } = require("../controller/SectionController");
 
 const {
@@ -53,6 +54,9 @@ router.route("/deleteallsection").delete(deleteAllSection);
 router.route("/getallsection").get(getAllSection);
 router.route("/getsinglesection/:id").get(getSingleSection);
 router.route("/updatesection/:id").put(updateSection);
+
+//demo
+router.route("/getAllSectionByMenuId/:id").get(getAllSectionByMenuId);
 
 router.route("/createitem/:id").post(createItem);
 router.route("/getsingleitem/:id").get(getSingleItem);
