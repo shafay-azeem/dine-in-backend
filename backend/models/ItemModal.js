@@ -1,6 +1,11 @@
 const mongoose = require("mongoose");
 
 const itemSchema = new mongoose.Schema({
+
+  sectionId: {
+    type: mongoose.Schema.ObjectId,
+    ref: "Section",
+  },
   itemName: {
     type: String,
   },

@@ -6,6 +6,7 @@ const {
   deleteMenu,
   updateMenu,
   deleteAllMenu,
+  getAllMenu,
 } = require("../controller/MenuController");
 const {
   createSection,
@@ -23,6 +24,8 @@ const {
   getSingleItem,
   deleteItem,
   deleteAllItem,
+  updateItem,
+  getAllItemBySectionId,
 } = require("../controller/ItemController");
 const {
   createSubSection,
@@ -31,50 +34,66 @@ const {
   getAllSubSection,
   getSingleSubSection,
   updateSubSection,
+  getAllSubSectionBySectionId,
 } = require("../controller/SubSectionController");
 const {
   createSubSectionItem,
   deleteAllSubItem,
   getAllSubItem,
   getSingleSubItem,
+  getAllItemBySubSectionId,
+  deleteSubItemById,
+  updateSubItem,
 } = require("../controller/SubSectionItemController");
 
 const router = express.Router();
 
-router.route("/createmenu").post(createMenu);
-router.route("/getallmenu").get(getAllSMenu);
-router.route("/getsinglemenu/:id").get(getSingleMenu);
-router.route("/menudelete/:id").delete(deleteMenu);
-router.route("/deleteallmenu").delete(deleteAllMenu);
-router.route("/updatemenu/:id").put(updateMenu);
 
-router.route("/createsection/:id").post(createSection);
-router.route("/sectiondelete/:id").delete(deleteSection);
-router.route("/deleteallsection").delete(deleteAllSection);
-router.route("/getallsection").get(getAllSection);
-router.route("/getsinglesection/:id").get(getSingleSection);
-router.route("/updatesection/:id").put(updateSection);
+//Menu
+router.route("/createMenu").post(createMenu);
+router.route("/getAllMenu").get(getAllMenu);
+router.route("/getSingleMenu/:id").get(getSingleMenu);
+router.route("/deleteMenu/:id").delete(deleteMenu);
+router.route("/deleteAllMenu").delete(deleteAllMenu);
+router.route("/updateMenu/:id").put(updateMenu);
+
+//Section
+router.route("/createSection/:id").post(createSection);
 router.route("/getAllSectionByMenuId/:id").get(getAllSectionByMenuId);
+router.route("/getAllSection").get(getAllSection);
+router.route("/getSingleSection/:id").get(getSingleSection);
+router.route("/updateSection/:id").put(updateSection);
+router.route("/deleteSection/:id").delete(deleteSection);
+router.route("/deleteAllSection").delete(deleteAllSection);
 
-router.route("/createitem/:id").post(createItem);
-router.route("/getsingleitem/:id").get(getSingleItem);
-router.route("/getallitem").get(getAllItem);
-router.route("/itemdelete/:id").delete(deleteItem);
-router.route("/deleteallitem").delete(deleteAllItem);
+
+//Item
+router.route("/createItem/:id").post(createItem);
+router.route("/getSingleItem/:id").get(getSingleItem);
+router.route("/getAllItemBySectionId/:id").get(getAllItemBySectionId);
+router.route("/deleteItem/:id").delete(deleteItem);
+router.route("/deleteAllItem").delete(deleteAllItem);
+router.route("/updateItem/:id").put(updateItem);
 
 //Sub Section
 router.route("/createSubSection/:id").post(createSubSection);
-router.route("/deleteSubSection/:id").delete(deleteSubSection);
-router.route("/deleteAllSubSection").delete(deleteAllSubSection);
+router.route("/getAllSubSectionBySectionId/:id").get(getAllSubSectionBySectionId);
 router.route("/getAllSubSection").get(getAllSubSection);
 router.route("/getSingleSubSection/:id").get(getSingleSubSection);
 router.route("/updateSubSection/:id").put(updateSubSection);
+router.route("/deleteSubSection/:id").delete(deleteSubSection);
+router.route("/deleteAllSubSection").delete(deleteAllSubSection);
 
 //Sub Section Item deleted
-// router.route("/createSubSectionItem/:id").post(createSubSectionItem);
-// router.route("/getSingleSubItem/:id").get(getSingleSubItem);
-// router.route("/getAllSubItem").get(getAllSubItem);
-// router.route("/itemdelete/:id").delete(deleteItem);
-// router.route("/deleteAllSubItem").delete(deleteAllSubItem);
+router.route("/createSubSectionItem/:id").post(createSubSectionItem);
+router.route("/getSingleSubItem/:id").get(getSingleSubItem);
+router.route("/getAllItemBySubSectionId/:id").get(getAllItemBySubSectionId);
+router.route("/getAllSubItem").get(getAllSubItem);
+router.route("/updateSubItem/:id").put(updateSubItem);
+router.route("/deleteSubItemById/:id").delete(deleteSubItemById);
+router.route("/deleteAllSubItem").delete(deleteAllSubItem);
+
+
+
 
 module.exports = router;

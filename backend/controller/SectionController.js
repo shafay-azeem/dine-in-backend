@@ -4,7 +4,7 @@ const Item = require("../models/ItemModal");
 
 //Create Section ---Post
 exports.createSection = async (req, res, next) => {
-  const { sectionName, sectionDescription, sectionNote, item, menuId } =
+  const { sectionName, sectionDescription, sectionNote, item } =
     req.body;
 
   const section = await Section.create({
@@ -12,7 +12,7 @@ exports.createSection = async (req, res, next) => {
     sectionDescription,
     sectionNote,
     item,
-    menuId,
+    menuId: req.params.id,
   });
 
   await updateMenu(req.params.id, section);
@@ -80,12 +80,19 @@ exports.getAllSection = async (req, res, next) => {
 exports.getAllSectionByMenuId = async (req, res, next) => {
   let menuId = req.params.id;
 
-  await Section.find({ menuId: { $in: menuId } }).then((section) => {
-    return res.status(200).json({
-      success: true,
-      section,
+  await Section.find({ menuId: { $in: menuId } })
+    .populate("item")
+    .populate({
+      path: "subSection", // populate subsectionsection
+      populate: {
+        path: "item", // in section, populate item
+      },
+    }).then((section) => {
+      return res.status(200).json({
+        success: true,
+        section,
+      });
     });
-  });
 
   // const section = await Section.find().then((sec) => {
   //   const secArr = sec.filter((section) => {
@@ -133,7 +140,13 @@ exports.updateSection = async (req, res) => {
     new: true,
     runValidators: true,
     useUnified: false,
-  }).populate("item");
+  }).populate("item")
+    .populate({
+      path: "subSection", // populate subsectionsection
+      populate: {
+        path: "item", // in section, populate item
+      },
+    });
 
   res.status(200).json({
     success: true,

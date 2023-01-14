@@ -9,6 +9,7 @@ exports.createSubSection = async (req, res, next) => {
     sectionName,
     sectionDescription,
     sectionNote,
+    sectionId: req.params.id
   });
 
   await updateSection(req.params.id, subSection);
@@ -57,7 +58,7 @@ exports.deleteAllSubSection = async (req, res) => {
 
 //Get All Sub Section ---Get
 exports.getAllSubSection = async (req, res, next) => {
-  const subSection = await SubSection.find().populate("item");
+  const subSection = await SubSection.find().populate('item');
 
   res.status(200).json({
     success: true,
@@ -65,11 +66,24 @@ exports.getAllSubSection = async (req, res, next) => {
   });
 };
 
+
+//Get All Sub Section BY Section ID ---Get
+exports.getAllSubSectionBySectionId = async (req, res, next) => {
+  let sectionId = req.params.id
+
+  await SubSection.find({ sectionId: { $in: sectionId } }).populate('item').then((subSection) => {
+    return res.status(200).json({
+      success: true,
+      subSection,
+    });
+  });
+};
+
 //Get Single Sub Section ---Get
 exports.getSingleSubSection = async (req, res, next) => {
   let subSectionId = req.params.id;
 
-  const subSection = await SubSection.findById(subSectionId).populate("item");
+  const subSection = await SubSection.findById(subSectionId).populate('item');
 
   res.status(200).json({
     success: true,
@@ -92,7 +106,7 @@ exports.updateSubSection = async (req, res) => {
     new: true,
     runValidators: true,
     useUnified: false,
-  });
+  }).populate('item');
 
   res.status(200).json({
     success: true,

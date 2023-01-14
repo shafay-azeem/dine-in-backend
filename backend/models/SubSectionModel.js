@@ -1,7 +1,11 @@
 const mongoose = require("mongoose");
-const Item = require("../models/ItemModal");
+
 
 const subSectionSchema = new mongoose.Schema({
+  sectionId: {
+    type: mongoose.Schema.ObjectId,
+    ref: "Section",
+  },
   sectionName: {
     type: String,
   },
@@ -14,7 +18,7 @@ const subSectionSchema = new mongoose.Schema({
   item: [
     {
       type: mongoose.Schema.ObjectId,
-      ref: "Item",
+      ref: "SubSectionItem",
     },
   ],
 

@@ -43,6 +43,7 @@ exports.createItem = async (req, res, next) => {
   } = req.body;
 
   const item = await Item.create({
+    sectionId: req.params.id,
     itemName,
     itemDescription,
     active,
@@ -91,26 +92,19 @@ exports.createItem = async (req, res, next) => {
 //Update Section Function
 async function updateSection(Id, itemRes) {
   let section = await Section.findById(Id);
-  let subSection = await SubSection.findById(Id);
+  section.item.push(itemRes);
+  await section.save({ validateBeforeSave: false });
 
-  if (section) {
-    section.item.push(itemRes);
-    await section.save({ validateBeforeSave: false });
-  } else if (subSection) {
-    subSection.item.push(itemRes);
-    await subSection.save({ validateBeforeSave: false });
-  } else {
-    console.log("invalid id");
-  }
 }
 
-//Get All Item ---Get
-exports.getAllItem = async (req, res, next) => {
-  const item = await Item.find();
-
-  res.status(200).json({
-    success: true,
-    item,
+//Get All Item by Section ID ---Get
+exports.getAllItemBySectionId = async (req, res, next) => {
+  let sectionId = req.params.id;
+  await Item.find({ sectionId: { $in: sectionId } }).then((item) => {
+    return res.status(200).json({
+      success: true,
+      item,
+    });
   });
 };
 
@@ -152,3 +146,27 @@ exports.deleteAllItem = async (req, res) => {
     message: "All Item Deleted Successfully",
   });
 };
+
+//Update Item By Id
+exports.updateItem = async (req, res) => {
+  let item = await Item.findById(req.params.id);
+
+  if (!item) {
+    return res.status(500).json({
+      success: false,
+      message: "Invalid Id",
+    });
+  }
+
+  item = await Item.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+    useUnified: false,
+  })
+
+  res.status(200).json({
+    success: true,
+    item,
+  });
+};
+

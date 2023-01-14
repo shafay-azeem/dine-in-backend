@@ -28,9 +28,9 @@ exports.getSingleMenu = async (req, res, next) => {
       { path: "item" },
       {
         path: "subSection",
-        populate: {
+        populate: [{
           path: "item",
-        },
+        }],
       },
     ],
   });
@@ -42,20 +42,19 @@ exports.getSingleMenu = async (req, res, next) => {
 };
 
 //Get All Menu ---Get
-exports.getAllSMenu = async (req, res, next) => {
+exports.getAllMenu = async (req, res, next) => {
   const menu = await Menu.find().populate({
     path: "section",
     populate: [
       { path: "item" },
       {
         path: "subSection",
-        populate: {
+        populate: [{
           path: "item",
-        },
-      },
+        }]
+      }
     ],
   });
-
   res.status(200).json({
     success: true,
     menu,
@@ -106,10 +105,16 @@ exports.updateMenu = async (req, res) => {
     runValidators: true,
     useUnified: false,
   }).populate({
-    path: "section", // populate section
-    populate: {
-      path: "item", // in section, populate item
-    },
+    path: "section",
+    populate: [
+      { path: "item" },
+      {
+        path: "subSection",
+        populate: [{
+          path: "item",
+        }],
+      },
+    ],
   });
 
   res.status(200).json({

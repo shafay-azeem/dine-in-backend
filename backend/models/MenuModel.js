@@ -17,10 +17,6 @@ const menuSchema = new mongoose.Schema({
       type: mongoose.Schema.ObjectId,
       ref: "Section",
     },
-    {
-      type: mongoose.Schema.ObjectId,
-      ref: "Item",
-    },
   ],
   createAt: {
     type: Date,
