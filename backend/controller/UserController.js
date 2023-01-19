@@ -1,6 +1,7 @@
 const User = require("../models/UserModel");
 const sendMail = require("../utils/SendMail");
 const crypto = require("crypto");
+const jwt = require("jsonwebtoken");
 
 //SignUp User --Post
 exports.createUser = async (req, res, next) => {
@@ -217,14 +218,21 @@ exports.userDetail = async (req, res, next) => {
 
 //Logout User --Get
 exports.logout = async (req, res, next) => {
-  // console.log(req.header);
-  let token = req.headers.authorization.split(" ")[1];
+  //console.log(process.env.JWT_SECRET_KEY);
+  //Verify JWT
+  jwt.verify(
+    req.headers.authorization.split(" ")[1],
+    process.env.JWT_SECRET_KEY,
+    (err, decoded) => {
+      if (err) {
+        return res.status(401).send({ message: "Invalid token" });
+      }
 
-  // const user = await User.deleteToken(token, (user) => {
-  //   console.log(user);
-  // });
+      // Invalidate JWT
+      decoded.logout = true;
 
-  User.deleteToken(token, (user) => {
-    console.log(user);
-  });
+      // Send response
+      res.status(200).send({ message: "Successfully logged out" });
+    }
+  );
 };
