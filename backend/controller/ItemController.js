@@ -18,6 +18,7 @@ exports.createItem = async (req, res, next) => {
     itemPriceOption,
     itemSaturatedFatPercentage,
     itemTransFat,
+    itemTransFatPercentage,
     itemCholesterol,
     itemCholesterolPercentage,
     itemSodium,
@@ -94,7 +95,6 @@ async function updateSection(Id, itemRes) {
   let section = await Section.findById(Id);
   section.item.push(itemRes);
   await section.save({ validateBeforeSave: false });
-
 }
 
 //Get All Item by Section ID ---Get
@@ -162,11 +162,10 @@ exports.updateItem = async (req, res) => {
     new: true,
     runValidators: true,
     useUnified: false,
-  })
+  });
 
   res.status(200).json({
     success: true,
     item,
   });
 };
-
