@@ -2,6 +2,7 @@ const User = require("../models/UserModel");
 const sendMail = require("../utils/SendMail");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
+const mongoose = require("mongoose");
 
 //SignUp User --Post
 exports.createUser = async (req, res, next) => {
@@ -207,12 +208,49 @@ exports.deleteAllUsers = async (req, res) => {
 
 //User Detail --Get
 exports.userDetail = async (req, res, next) => {
-  let userid = req.params.id;
-  const user = await User.findById(userid);
+  const token = req.headers.authorization.split(" ")[1];
+  if (!token) {
+    return res
+      .status(401)
+      .json({ success: false, message: "No token provided" });
+  }
 
-  res.status(200).json({
-    success: true,
-    user,
+  jwt.verify(token, process.env.JWT_SECRET_KEY, (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ success: false, message: "Invalid token" });
+    }
+
+    req.user = decoded;
+    const stringId = req.user.id;
+
+    if (mongoose.Types.ObjectId.isValid(stringId)) {
+      const objectId = mongoose.Types.ObjectId(stringId);
+      User.findById(objectId)
+        .then((user) => {
+          if (!user) {
+            return res.status(404).json({
+              success: false,
+              message: "User not found",
+            });
+          }
+          res.status(200).json({
+            success: true,
+            user,
+          });
+        })
+        .catch((error) => {
+          res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error,
+          });
+        });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: "Invalid Id passed",
+      });
+    }
   });
 };
 

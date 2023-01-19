@@ -1,6 +1,14 @@
 const mongoose = require("mongoose");
 
 const modifierSchema = new mongoose.Schema({
+    userName: {
+        type: String,
+        ref: "User",
+    },
+    userId: {
+        type: mongoose.Schema.ObjectId,
+        ref: "User",
+    },
     Groupname: {
         type: String,
     },

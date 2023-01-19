@@ -19,7 +19,7 @@ router.route("/createUser").post(createUser);
 router.route("/login").post(loginUser);
 router.route("/forgotPassword").post(forgotPassword);
 router.route("/resetPassword/:token").put(resetPassword);
-router.route("/userDetail/:id").get(isAuthenticatedUser, userDetail);
+router.route("/userDetail").get(isAuthenticatedUser, userDetail);
 router.route("/getAllUsers").get(isAuthenticatedUser, getAllUsers);
 router.route("/updateProfile").put(isAuthenticatedUser, updateProfile);
 router.route("/deleteUser/:id").delete(isAuthenticatedUser, deleteUser);
