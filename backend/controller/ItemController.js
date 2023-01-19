@@ -46,6 +46,7 @@ exports.createItem = async (req, res, next) => {
   const item = await Item.create({
     sectionId: req.params.id,
     itemName,
+    itemImage: req.file.path,
     itemDescription,
     active,
     itemCalorie,
@@ -58,6 +59,7 @@ exports.createItem = async (req, res, next) => {
     itemPriceOption,
     itemSaturatedFatPercentage,
     itemTransFat,
+    itemTransFatPercentage,
     itemCholesterol,
     itemCholesterolPercentage,
     itemSodium,

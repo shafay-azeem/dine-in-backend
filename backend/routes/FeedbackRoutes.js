@@ -15,26 +15,33 @@ const {
   deleteSingleQuestion,
   updateFormQuestion,
 } = require("../controller/FeedbackFormController");
+const { isAuthenticatedUser } = require("../middleware/auth");
 const router = express.Router();
 
 //Feedback
-router.route("/createfeedback").post(createFeedbackForm);
-router.route("/updateform/:id").put(updateForm);
-router.route("/getallform").get(getAllForm);
-router.route("/getsingleform/:id").get(getSingleForm);
+router.route("/createfeedback").post(isAuthenticatedUser, createFeedbackForm);
+router.route("/updateform/:id").put(isAuthenticatedUser, updateForm);
+router.route("/getallform").get(isAuthenticatedUser, getAllForm);
+router.route("/getsingleform/:id").get(isAuthenticatedUser, getSingleForm);
 router.route("/deleteallform").delete(deleteAllForm);
-router.route("/deleteform/:id").delete(deleteForm);
+router.route("/deleteform/:id").delete(isAuthenticatedUser, deleteForm);
 
 //Questions
-router.route("/createquestions").post(createResultForm);
-router.route("/getallquestion").get(getAllQuestion);
-router.route("/getsinglequestion/:id").get(getSingleQuestion);
+router.route("/createfeedbackquestion/:id").post(createFormQuestion);
+router.route("/getallquestion").get(isAuthenticatedUser, getAllQuestion);
+router
+  .route("/getsinglequestion/:id")
+  .get(isAuthenticatedUser, getSingleQuestion);
 router.route("/deleteallquestion").delete(deleteFormQuestion);
-router.route("/deletesinglequestion/:id").delete(deleteSingleQuestion);
-router.route("/updateFormQuestion/:id").put(updateFormQuestion);
+router
+  .route("/deletesinglequestion/:id")
+  .delete(isAuthenticatedUser, deleteSingleQuestion);
+router
+  .route("/updateFormQuestion/:id")
+  .put(isAuthenticatedUser, updateFormQuestion);
 
 //Result
-router.route("/createfeedbackquestion/:id").post(createFormQuestion);
+router.route("/createquestions").post(createResultForm);
 router.route("/deleteformresults").delete(deleteFormResults);
 
 module.exports = router;

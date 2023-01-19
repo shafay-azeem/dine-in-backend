@@ -3,9 +3,18 @@ const Section = require("../models/SectionModel");
 const Item = require("../models/ItemModal");
 
 const menuSchema = new mongoose.Schema({
+  userName: {
+    type: String,
+    ref: "User",
+  },
+  userId: {
+    type: mongoose.Schema.ObjectId,
+    ref: "User",
+  },
   menuName: {
     type: String,
   },
+
   menuDescription: {
     type: String,
   },

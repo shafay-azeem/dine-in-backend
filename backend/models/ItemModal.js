@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 
 const itemSchema = new mongoose.Schema({
-
   sectionId: {
     type: mongoose.Schema.ObjectId,
     ref: "Section",
@@ -9,19 +8,22 @@ const itemSchema = new mongoose.Schema({
   itemName: {
     type: String,
   },
+  itemImage: {
+    type: String,
+  },
   itemDescription: {
     type: String,
   },
   active: {
     type: Boolean,
-    default: false
+    default: false,
   },
   itemCalorie: {
     type: String,
   },
   itemTag: {
     type: Boolean,
-    default: false
+    default: false,
   },
   itemLabel: [
     {
@@ -33,9 +35,8 @@ const itemSchema = new mongoose.Schema({
       },
       Special_Presentation: {
         type: String,
-
       },
-    }
+    },
   ],
   itemWarning: [
     {
@@ -45,7 +46,7 @@ const itemSchema = new mongoose.Schema({
       AlcoholFree: {
         type: String,
       },
-    }
+    },
   ],
   itemPrepTime: {
     type: String,
@@ -66,9 +67,8 @@ const itemSchema = new mongoose.Schema({
       },
       calories: {
         type: String,
-
       },
-    }
+    },
   ],
   itemSaturatedFatPercentage: {
     type: String,
@@ -146,15 +146,12 @@ const itemSchema = new mongoose.Schema({
     {
       groupname: {
         type: String,
-
       },
       min: {
         type: String,
-
       },
       max: {
         type: String,
-
       },
       reference: [
         {
@@ -169,7 +166,8 @@ const itemSchema = new mongoose.Schema({
           },
         },
       ],
-    }],
+    },
+  ],
 
   createAt: {
     type: Date,

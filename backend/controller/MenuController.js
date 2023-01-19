@@ -6,6 +6,8 @@ exports.createMenu = async (req, res, next) => {
   const { menuName, menuDescription, menuNote, section } = req.body;
 
   const menu = await Menu.create({
+    userName: req.user.name,
+    userId: req.user._id,
     menuName,
     menuDescription,
     menuNote,
@@ -28,9 +30,11 @@ exports.getSingleMenu = async (req, res, next) => {
       { path: "item" },
       {
         path: "subSection",
-        populate: [{
-          path: "item",
-        }],
+        populate: [
+          {
+            path: "item",
+          },
+        ],
       },
     ],
   });
@@ -49,10 +53,12 @@ exports.getAllMenu = async (req, res, next) => {
       { path: "item" },
       {
         path: "subSection",
-        populate: [{
-          path: "item",
-        }]
-      }
+        populate: [
+          {
+            path: "item",
+          },
+        ],
+      },
     ],
   });
   res.status(200).json({
@@ -110,9 +116,11 @@ exports.updateMenu = async (req, res) => {
       { path: "item" },
       {
         path: "subSection",
-        populate: [{
-          path: "item",
-        }],
+        populate: [
+          {
+            path: "item",
+          },
+        ],
       },
     ],
   });
