@@ -24,15 +24,16 @@ const menuSchema = new mongoose.Schema({
   },
 
   availaibility: [{
-    day: {
+
+    StartTime: {
       type: String,
     },
-    startTime: {
+    EndTime: {
       type: String,
     },
-    endTime: {
+    Day: {
       type: String,
-    },
+    }
   }],
   menuNote: {
     type: Number,

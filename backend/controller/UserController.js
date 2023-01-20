@@ -17,6 +17,7 @@ exports.createUser = async (req, res, next) => {
   return res.status(201).json({
     success: true,
     user,
+    message: "Signup Successfully",
     token: user.getJwtToken(user._id),
   });
 };
@@ -53,6 +54,7 @@ exports.loginUser = async (req, res, next) => {
   return res.status(201).json({
     success: true,
     user,
+    message: "Login Successfully",
     token: user.getJwtToken(user._id),
   });
 };
