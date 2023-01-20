@@ -129,6 +129,7 @@ exports.createFormQuestion = async (req, res, next) => {
   const { question, questionType } = req.body;
 
   const formQuestion = await FormQuestion.create({
+    feedbackFormId: req.params._id,
     question,
     questionType,
   });
