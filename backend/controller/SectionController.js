@@ -4,14 +4,17 @@ const Item = require("../models/ItemModal");
 
 //Create Section ---Post
 exports.createSection = async (req, res, next) => {
-  const { sectionName, sectionDescription, sectionNote, item } =
+  const { sectionName, sectionDescription, sectionNote, sectionLabel, sectionStatus, sectionImage } =
     req.body;
 
   const section = await Section.create({
     sectionName,
     sectionDescription,
     sectionNote,
-    item,
+    sectionLabel,
+    sectionStatus,
+    sectionImage,
+
     menuId: req.params.id,
   });
 

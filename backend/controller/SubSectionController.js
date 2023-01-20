@@ -3,12 +3,15 @@ const Section = require("../models/SectionModel");
 
 //Create Sub Section ---Post
 exports.createSubSection = async (req, res, next) => {
-  const { sectionName, sectionDescription, sectionNote } = req.body;
+  const { sectionName, sectionDescription, sectionNote, sectionLabel, sectionStatus, sectionImage } = req.body;
 
   const subSection = await SubSection.create({
     sectionName,
     sectionDescription,
     sectionNote,
+    sectionLabel,
+    sectionStatus,
+    sectionImage,
     sectionId: req.params.id
   });
 

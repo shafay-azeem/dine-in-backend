@@ -3,7 +3,7 @@ const Menu = require("../models/MenuModel");
 
 //Create Menu ---Post
 exports.createMenu = async (req, res, next) => {
-  const { menuName, menuDescription, menuNote, section } = req.body;
+  const { menuName, menuDescription, menuStatus, availaibility, menuNote, section } = req.body;
 
   const menu = await Menu.create({
     userName: req.user.name,
@@ -12,6 +12,8 @@ exports.createMenu = async (req, res, next) => {
     menuDescription,
     menuNote,
     section,
+    menuStatus,
+    availaibility
   });
 
   res.status(201).json({

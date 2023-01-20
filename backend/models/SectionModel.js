@@ -16,6 +16,23 @@ const sectionSchema = new mongoose.Schema({
   sectionNote: {
     type: Number,
   },
+  sectionLabel: [
+    {
+      Name: {
+        type: String,
+      },
+      Signature: {
+        type: String,
+      }
+    }
+  ],
+  sectionStatus: {
+    type: Boolean,
+    default: false
+  },
+  sectionImage: {
+    type: String,
+  },
   item: [
     {
       type: mongoose.Schema.ObjectId,

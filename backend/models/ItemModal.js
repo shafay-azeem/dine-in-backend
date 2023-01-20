@@ -130,6 +130,9 @@ const itemSchema = new mongoose.Schema({
   itemTotalFat: {
     type: String,
   },
+  itemTotalFatPercentage: {
+    type: String,
+  },
   itemSaturatedFat: {
     type: String,
   },

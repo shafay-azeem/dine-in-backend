@@ -14,10 +14,26 @@ const menuSchema = new mongoose.Schema({
   menuName: {
     type: String,
   },
+  menuStatus: {
+    type: Boolean,
+    default: false
+  },
 
   menuDescription: {
     type: String,
   },
+
+  availaibility: [{
+    day: {
+      type: String,
+    },
+    startTime: {
+      type: String,
+    },
+    endTime: {
+      type: String,
+    },
+  }],
   menuNote: {
     type: Number,
   },
