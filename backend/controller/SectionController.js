@@ -4,8 +4,14 @@ const Item = require("../models/ItemModal");
 
 //Create Section ---Post
 exports.createSection = async (req, res, next) => {
-  const { sectionName, sectionDescription, sectionNote, sectionLabel, sectionStatus, sectionImage } =
-    req.body;
+  const {
+    sectionName,
+    sectionDescription,
+    sectionNote,
+    sectionLabel,
+    sectionStatus,
+    sectionImage,
+  } = req.body;
 
   const section = await Section.create({
     sectionName,
@@ -90,7 +96,8 @@ exports.getAllSectionByMenuId = async (req, res, next) => {
       populate: {
         path: "item", // in section, populate item
       },
-    }).then((section) => {
+    })
+    .then((section) => {
       return res.status(200).json({
         success: true,
         section,
@@ -143,7 +150,8 @@ exports.updateSection = async (req, res) => {
     new: true,
     runValidators: true,
     useUnified: false,
-  }).populate("item")
+  })
+    .populate("item")
     .populate({
       path: "subSection", // populate subsectionsection
       populate: {
