@@ -18,7 +18,7 @@ const sectionSchema = new mongoose.Schema({
   },
   sectionLabel: [
     {
-      Name: {
+      New: {
         type: String,
       },
       Signature: {
