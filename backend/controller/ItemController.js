@@ -6,11 +6,13 @@ const SubSection = require("../models/SubSectionModel");
 exports.createItem = async (req, res, next) => {
   const {
     itemName,
+    itemImage,
     itemDescription,
     active,
     itemCalorie,
     itemTag,
     itemLabel,
+    itemRecommendedItems,
     itemWarning,
     itemPrepTime,
     itemPrice,
@@ -47,12 +49,13 @@ exports.createItem = async (req, res, next) => {
   const item = await Item.create({
     sectionId: req.params.id,
     itemName,
-    itemImage: req.file.path,
+    itemImage,
     itemDescription,
     active,
     itemCalorie,
     itemTag,
     itemLabel,
+    itemRecommendedItems,
     itemWarning,
     itemPrepTime,
     itemPrice,

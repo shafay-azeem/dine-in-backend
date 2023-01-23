@@ -27,8 +27,10 @@ router.route("/deleteallform").delete(deleteAllForm);
 router.route("/deleteform/:id").delete(isAuthenticatedUser, deleteForm);
 
 //Questions
-router.route("/createfeedbackquestion/:id").post(createFormQuestion);
-router.route("/getallquestion").get(isAuthenticatedUser, getAllQuestion);
+router
+  .route("/createfeedbackquestion/:id")
+  .post(isAuthenticatedUser, createFormQuestion);
+router.route("/getallquestion/:id").get(isAuthenticatedUser, getAllQuestion);
 router
   .route("/getsinglequestion/:id")
   .get(isAuthenticatedUser, getSingleQuestion);

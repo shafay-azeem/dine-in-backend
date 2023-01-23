@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 
-
 const subSectionSchema = new mongoose.Schema({
   sectionId: {
     type: mongoose.Schema.ObjectId,
@@ -22,12 +21,12 @@ const subSectionSchema = new mongoose.Schema({
       },
       Signature: {
         type: String,
-      }
-    }
+      },
+    },
   ],
   sectionStatus: {
     type: Boolean,
-    default: false
+    default: false,
   },
   sectionImage: {
     type: String,

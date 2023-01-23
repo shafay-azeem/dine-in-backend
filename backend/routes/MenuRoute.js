@@ -93,9 +93,7 @@ router.route("/deleteSection/:id").delete(isAuthenticatedUser, deleteSection);
 router.route("/deleteAllSection").delete(deleteAllSection);
 
 //Item
-router
-  .route("/createItem/:id")
-  .post(isAuthenticatedUser, upload.single("itemImage"), createItem);
+router.route("/createItem/:id").post(isAuthenticatedUser, createItem);
 router.route("/getSingleItem/:id").get(isAuthenticatedUser, getSingleItem);
 router
   .route("/getAllItemBySectionId/:id")

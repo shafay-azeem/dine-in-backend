@@ -16,6 +16,7 @@ exports.createFeedbackForm = async (req, res, next) => {
   res.status(201).json({
     success: true,
     feedbackForm,
+    message: "Form Created SuccessFully",
   });
 };
 
@@ -126,15 +127,16 @@ exports.deleteSingleQuestion = async (req, res) => {
 
 //Create Form Question --Post
 exports.createFormQuestion = async (req, res, next) => {
-  const { question, questionType } = req.body;
+  const { Questions } = req.body;
 
   const formQuestion = await FormQuestion.create({
-    feedbackFormId: req.params._id,
-    question,
-    questionType,
+    feedbackFormId: req.params.id,
+    Questions,
   });
 
-  await updateFormQuestion(req.params.id, formQuestion);
+  console.log(req.params.id);
+
+  // await updateFormQuestion(req.params.id, formQuestion);
 
   res.status(201).json({
     success: true,
@@ -143,21 +145,25 @@ exports.createFormQuestion = async (req, res, next) => {
 };
 
 //Update Form Question Function
-async function updateFormQuestion(formId, formQuestionResponse) {
-  let feedbackForm = await FeedbackForm.findById(formId);
-  //console.log(feedbackForm, "feedbackForm");
-  feedbackForm.formQuestions.push(formQuestionResponse);
-  await feedbackForm.save({ validateBeforeSave: false });
-}
+// async function updateFormQuestion(formId, formQuestionResponse) {
+//   let feedbackForm = await FeedbackForm.findById(formId);
+//   //console.log(feedbackForm, "feedbackForm");
+//   feedbackForm.formQuestions.push(formQuestionResponse);
+//   await feedbackForm.save({ validateBeforeSave: false });
+// }
 
 //Get All Questions --Get
 exports.getAllQuestion = async (req, res, next) => {
-  const formQuestion = await FormQuestion.find();
+  let formId = req.params.id;
 
-  res.status(200).json({
-    success: true,
-    formQuestion,
-  });
+  await FormQuestion.find({ feedbackFormId: { $in: formId } }).then(
+    (formQuestion) => {
+      return res.status(200).json({
+        success: true,
+        formQuestion,
+      });
+    }
+  );
 };
 
 //Get Single Questions ---Get

@@ -27,7 +27,7 @@ const itemSchema = new mongoose.Schema({
   },
   itemLabel: [
     {
-      Name: {
+      New: {
         type: String,
       },
       Signature: {
@@ -38,6 +38,9 @@ const itemSchema = new mongoose.Schema({
       },
     },
   ],
+  itemRecommendedItems: {
+    type: String,
+  },
   itemWarning: [
     {
       Alcohol: {

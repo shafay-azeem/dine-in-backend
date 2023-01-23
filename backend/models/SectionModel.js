@@ -23,12 +23,12 @@ const sectionSchema = new mongoose.Schema({
       },
       Signature: {
         type: String,
-      }
-    }
+      },
+    },
   ],
   sectionStatus: {
     type: Boolean,
-    default: false
+    default: false,
   },
   sectionImage: {
     type: String,
