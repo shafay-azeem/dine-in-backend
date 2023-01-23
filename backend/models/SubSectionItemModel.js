@@ -27,7 +27,7 @@ const subSectionItemSchema = new mongoose.Schema({
   },
   itemLabel: [
     {
-      Name: {
+      New: {
         type: String,
       },
       Signature: {
