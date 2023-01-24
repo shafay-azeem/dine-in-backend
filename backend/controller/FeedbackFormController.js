@@ -253,3 +253,15 @@ exports.deleteFormResults = async (req, res) => {
     message: "All Form Result Deleted Successfully",
   });
 };
+
+//Get ALL Results --Get
+exports.getAllResults = async (req, res, next) => {
+  const formResponse = await FormResponse.find();
+
+  console.log(formResponse);
+
+  res.status(200).json({
+    success: true,
+    formResponse,
+  });
+};

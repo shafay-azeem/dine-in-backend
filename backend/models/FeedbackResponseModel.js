@@ -1,13 +1,11 @@
 const mongoose = require("mongoose");
 
 const formResponseSchema = new mongoose.Schema({
-
   formName: {
     type: String,
   },
   response: [
     {
-
       question: {
         type: String,
       },
