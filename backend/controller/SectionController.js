@@ -10,6 +10,7 @@ exports.createSection = async (req, res, next) => {
     sectionNote,
     sectionLabel,
     sectionStatus,
+    sectionToggle,
     sectionImage,
   } = req.body;
 
@@ -19,6 +20,7 @@ exports.createSection = async (req, res, next) => {
     sectionNote,
     sectionLabel,
     sectionStatus,
+    sectionToggle,
     sectionImage,
 
     menuId: req.params.id,

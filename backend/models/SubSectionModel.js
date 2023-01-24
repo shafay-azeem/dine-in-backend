@@ -28,6 +28,10 @@ const subSectionSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  sectionToggle: {
+    type: Boolean,
+    default: false,
+  },
   sectionImage: {
     type: String,
   },

@@ -1,4 +1,3 @@
-
 const SubSectionItem = require("../models/SubSectionItemModel");
 const SubSection = require("../models/SubSectionModel");
 
@@ -12,6 +11,7 @@ exports.createSubSectionItem = async (req, res, next) => {
     itemCalorie,
     itemTag,
     itemLabel,
+    itemRecommendedItems,
     itemWarning,
     itemPrepTime,
     itemPrice,
@@ -44,7 +44,6 @@ exports.createSubSectionItem = async (req, res, next) => {
     itemModifier,
   } = req.body;
 
-
   const subSectionItem = await SubSectionItem.create({
     subSectionId: req.params.id,
     itemName,
@@ -54,6 +53,7 @@ exports.createSubSectionItem = async (req, res, next) => {
     itemCalorie,
     itemTag,
     itemLabel,
+    itemRecommendedItems,
     itemWarning,
     itemPrepTime,
     itemPrice,
@@ -113,7 +113,7 @@ exports.deleteAllSubItem = async (req, res) => {
 
 //Get All SubSection Item ---Get
 exports.getAllSubItem = async (req, res, next) => {
-  const subSectionItem = await SubSectionItem.find()
+  const subSectionItem = await SubSectionItem.find();
 
   res.status(200).json({
     success: true,
@@ -124,24 +124,25 @@ exports.getAllSubItem = async (req, res, next) => {
 //Get All Item by Subsection ID ---Get
 exports.getAllItemBySubSectionId = async (req, res, next) => {
   let subSectionId = req.params.id;
-  await SubSectionItem.find({ subSectionId: { $in: subSectionId } }).then((item) => {
-    return res.status(200).json({
-      success: true,
-      item,
-    });
-  });
+  await SubSectionItem.find({ subSectionId: { $in: subSectionId } }).then(
+    (item) => {
+      return res.status(200).json({
+        success: true,
+        item,
+      });
+    }
+  );
 };
 
 //Get Single Sub Item ---Get
 exports.getSingleSubItem = async (req, res, next) => {
   let itemId = req.params.id;
-  const item = await SubSectionItem.findById(itemId)
+  const item = await SubSectionItem.findById(itemId);
   res.status(200).json({
     success: true,
     item,
   });
 };
-
 
 //Delete Item ---Delete
 exports.deleteSubItemById = async (req, res) => {
@@ -187,11 +188,10 @@ exports.updateSubItem = async (req, res) => {
     new: true,
     runValidators: true,
     useUnified: false,
-  })
+  });
 
   res.status(200).json({
     success: true,
     item,
   });
 };
-

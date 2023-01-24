@@ -30,6 +30,10 @@ const sectionSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  sectionToggle: {
+    type: Boolean,
+    default: false,
+  },
   sectionImage: {
     type: String,
   },

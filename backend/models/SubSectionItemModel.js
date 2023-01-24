@@ -38,6 +38,9 @@ const subSectionItemSchema = new mongoose.Schema({
       },
     },
   ],
+  itemRecommendedItems: {
+    type: String,
+  },
   itemWarning: [
     {
       Alcohol: {
