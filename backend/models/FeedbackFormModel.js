@@ -9,10 +9,12 @@ const feedbackFormSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  formQuestions: {
-    type: mongoose.Schema.ObjectId,
-    ref: "FormQuestion",
-  },
+  formQuestions: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: "FormQuestion",
+    },
+  ],
 
   createAt: {
     type: Date,

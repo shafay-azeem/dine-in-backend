@@ -5,12 +5,11 @@ const { all } = require("../app");
 
 //Create FeedBack Form --Post
 exports.createFeedbackForm = async (req, res, next) => {
-  const { formName, active, formQuestions } = req.body;
+  const { formName, active } = req.body;
 
   const feedbackForm = await FeedbackForm.create({
     formName,
     active,
-    formQuestions,
   });
 
   res.status(201).json({
@@ -136,7 +135,7 @@ exports.createFormQuestion = async (req, res, next) => {
 
   console.log(req.params.id);
 
-  // await updateFormQuestion(req.params.id, formQuestion);
+  await updateFormQuestion(req.params.id, formQuestion);
 
   res.status(201).json({
     success: true,
@@ -145,12 +144,12 @@ exports.createFormQuestion = async (req, res, next) => {
 };
 
 //Update Form Question Function
-// async function updateFormQuestion(formId, formQuestionResponse) {
-//   let feedbackForm = await FeedbackForm.findById(formId);
-//   //console.log(feedbackForm, "feedbackForm");
-//   feedbackForm.formQuestions.push(formQuestionResponse);
-//   await feedbackForm.save({ validateBeforeSave: false });
-// }
+async function updateFormQuestion(formId, formQuestionResponse) {
+  let feedbackForm = await FeedbackForm.findById(formId);
+  //console.log(feedbackForm, "feedbackForm");
+  feedbackForm.formQuestions.push(formQuestionResponse);
+  await feedbackForm.save({ validateBeforeSave: false });
+}
 
 //Get All Questions --Get
 exports.getAllQuestion = async (req, res, next) => {
@@ -207,7 +206,7 @@ exports.createResultForm = async (req, res, next) => {
     "formQuestions"
   );
   let form_name = feedbackForm.formName;
-  let question = feedbackForm.formQuestions;
+  let question = feedbackForm.formQuestions[0].Questions;
 
   let allow;
   if (form_name === req.body.formName) {
