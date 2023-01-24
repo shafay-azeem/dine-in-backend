@@ -2,6 +2,14 @@ const mongoose = require("mongoose");
 const FormQuestion = require("./FormQuestionModel");
 
 const feedbackFormSchema = new mongoose.Schema({
+  userName: {
+    type: String,
+    ref: "User",
+  },
+  userId: {
+    type: mongoose.Schema.ObjectId,
+    ref: "User",
+  },
   formName: {
     type: String,
   },

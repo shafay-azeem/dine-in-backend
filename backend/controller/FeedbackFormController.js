@@ -8,6 +8,8 @@ exports.createFeedbackForm = async (req, res, next) => {
   const { formName, active } = req.body;
 
   const feedbackForm = await FeedbackForm.create({
+    userName: req.user.name,
+    userId: req.user._id,
     formName,
     active,
   });
@@ -44,7 +46,7 @@ exports.updateForm = async (req, res) => {
 
 //Get All Form --Get
 exports.getAllForm = async (req, res, next) => {
-  const feedbackForm = await FeedbackForm.find().populate("formQuestions");
+  const feedbackForm = await FeedbackForm.find({ userId: { $in: req.user.id } }).populate("formQuestions");
 
   res.status(200).json({
     success: true,

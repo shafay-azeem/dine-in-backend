@@ -49,24 +49,57 @@ exports.getSingleMenu = async (req, res, next) => {
 
 //Get All Menu ---Get
 exports.getAllMenu = async (req, res, next) => {
-  const menu = await Menu.find().populate({
-    path: "section",
-    populate: [
-      { path: "item" },
-      {
-        path: "subSection",
-        populate: [
-          {
-            path: "item",
-          },
-        ],
-      },
-    ],
-  });
-  res.status(200).json({
-    success: true,
-    menu,
-  });
+
+  // const menu = await Menu.find({ userId: { $in: req.params.id } }).populate({
+  //   path: "section",
+  //   populate: [
+  //     { path: "item" },
+  //     {
+  //       path: "subSection",
+  //       populate: [
+  //         {
+  //           path: "item",
+  //         },
+  //       ],
+  //     },
+  //   ],
+  // });
+  // res.status(200).json({
+  //   success: true,
+  //   menu,
+  // });
+
+
+
+  try {
+    const menu = await Menu.find({ userId: { $in: req.user.id } }).populate({
+      path: "section",
+      populate: [
+        { path: "item" },
+        {
+          path: "subSection",
+          populate: [
+            {
+              path: "item",
+            },
+          ],
+        },
+      ],
+    });
+    res.status(200).json({
+      success: true,
+      menu,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      error: err.message,
+    });
+  }
+
+
+
+
 };
 
 //Delete Menu

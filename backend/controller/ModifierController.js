@@ -73,7 +73,7 @@ exports.getSingleModifer = async (req, res, next) => {
 
 //Get All Modifier ---Get
 exports.getAllModifier = async (req, res, next) => {
-  const modifier = await Modifier.find();
+  const modifier = await Modifier.find({ userId: { $in: req.user.id } });
 
   res.status(200).json({
     success: true,
