@@ -202,7 +202,7 @@ exports.updateFormQuestion = async (req, res) => {
 
 //Create Result Form --Post
 exports.createResultForm = async (req, res, next) => {
-  let feedbackForm = await FeedbackForm.findById(req.query.id).populate(
+  let feedbackForm = await FeedbackForm.findById(req.params.id).populate(
     "formQuestions"
   );
   let form_name = feedbackForm.formName;

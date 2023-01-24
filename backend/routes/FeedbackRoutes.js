@@ -43,7 +43,7 @@ router
   .put(isAuthenticatedUser, updateFormQuestion);
 
 //Result
-router.route("/createquestions").post(createResultForm);
+router.route("/createquestions/:id").post(createResultForm);
 router.route("/deleteformresults").delete(deleteFormResults);
 
 module.exports = router;
