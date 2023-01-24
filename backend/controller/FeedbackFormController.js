@@ -46,7 +46,9 @@ exports.updateForm = async (req, res) => {
 
 //Get All Form --Get
 exports.getAllForm = async (req, res, next) => {
-  const feedbackForm = await FeedbackForm.find({ userId: { $in: req.user.id } }).populate("formQuestions");
+  const feedbackForm = await FeedbackForm.find({
+    userId: { $in: req.user.id },
+  }).populate("formQuestions");
 
   res.status(200).json({
     success: true,
@@ -207,6 +209,9 @@ exports.createResultForm = async (req, res, next) => {
   let feedbackForm = await FeedbackForm.findById(req.params.id).populate(
     "formQuestions"
   );
+
+  let userName = feedbackForm.userName;
+  let userId = feedbackForm.userId;
   let form_name = feedbackForm.formName;
   let question = feedbackForm.formQuestions[0].Questions;
 
@@ -230,6 +235,8 @@ exports.createResultForm = async (req, res, next) => {
   if (allow === true) {
     const { formName, response } = req.body;
     const formResponse = await FormResponse.create({
+      userName,
+      userId,
       formName,
       response,
     });
@@ -258,7 +265,9 @@ exports.deleteFormResults = async (req, res) => {
 
 //Get ALL Results --Get
 exports.getAllResults = async (req, res, next) => {
-  const formResponse = await FormResponse.find();
+  const formResponse = await FormResponse.find({
+    userId: { $in: req.user.id },
+  });
 
   console.log(formResponse);
 
