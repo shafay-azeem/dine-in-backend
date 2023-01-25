@@ -89,34 +89,50 @@ exports.getAllSection = async (req, res, next) => {
 
 //Get All Section By Menu Id ---Get
 exports.getAllSectionByMenuId = async (req, res, next) => {
-  let menuId = req.params.id;
+  try {
+    let menuId = req.params.id;
 
-  await Section.find({ menuId: { $in: menuId } })
-    .populate("item")
-    .populate({
-      path: "subSection", // populate subsectionsection
-      populate: {
-        path: "item", // in section, populate item
-      },
-    })
-    .then((section) => {
-      return res.status(200).json({
-        success: true,
-        section,
+    await Section.find({ menuId: { $in: menuId } })
+      .populate("item")
+      .populate({
+        path: "subSection", // populate subsectionsection
+        populate: {
+          path: "item", // in section, populate item
+        },
+      })
+      .then((section) => {
+        return res.status(200).json({
+          success: true,
+          section,
+        });
       });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred while fetching sections",
+      error: err.message,
     });
-
-  // const section = await Section.find().then((sec) => {
-  //   const secArr = sec.filter((section) => {
-  //     return section.menuId == menuId;
-  //   });
-
-  //   return res.status(200).json({
-  //     success: true,
-  //     secArr,
-  //   });
-  // });
+  }
 };
+// exports.getAllSectionByMenuId = async (req, res, next) => {
+//   let menuId = req.params.id;
+
+//   await Section.find({ menuId: { $in: ObjectID(menuId) } })
+//     .populate("item")
+//     .populate({
+//       path: "subSection", // populate subsectionsection
+//       populate: {
+//         path: "item", // in section, populate item
+//       },
+//     })
+//     .then((section) => {
+//       return res.status(200).json({
+//         success: true,
+//         section,
+//       });
+//     });
+
+// };
 
 //Get Single Section ---Get
 exports.getSingleSection = async (req, res, next) => {

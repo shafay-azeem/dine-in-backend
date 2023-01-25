@@ -3,7 +3,14 @@ const Menu = require("../models/MenuModel");
 
 //Create Menu ---Post
 exports.createMenu = async (req, res, next) => {
-  const { menuName, menuDescription, menuStatus, availaibility, menuNote, section } = req.body;
+  const {
+    menuName,
+    menuDescription,
+    menuStatus,
+    availaibility,
+    menuNote,
+    section,
+  } = req.body;
 
   const menu = await Menu.create({
     userName: req.user.name,
@@ -13,7 +20,7 @@ exports.createMenu = async (req, res, next) => {
     menuNote,
     section,
     menuStatus,
-    availaibility
+    availaibility,
   });
 
   res.status(201).json({
@@ -49,28 +56,6 @@ exports.getSingleMenu = async (req, res, next) => {
 
 //Get All Menu ---Get
 exports.getAllMenu = async (req, res, next) => {
-
-  // const menu = await Menu.find({ userId: { $in: req.params.id } }).populate({
-  //   path: "section",
-  //   populate: [
-  //     { path: "item" },
-  //     {
-  //       path: "subSection",
-  //       populate: [
-  //         {
-  //           path: "item",
-  //         },
-  //       ],
-  //     },
-  //   ],
-  // });
-  // res.status(200).json({
-  //   success: true,
-  //   menu,
-  // });
-
-
-
   try {
     const menu = await Menu.find({ userId: { $in: req.user.id } }).populate({
       path: "section",
@@ -96,10 +81,6 @@ exports.getAllMenu = async (req, res, next) => {
       error: err.message,
     });
   }
-
-
-
-
 };
 
 //Delete Menu
