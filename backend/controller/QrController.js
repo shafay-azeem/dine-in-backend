@@ -194,6 +194,7 @@ exports.getSingleSubItemQr = asyncHandler(async (req, res, next) => {
 exports.getAllFormQr = async (req, res, next) => {
   const feedbackForm = await FeedbackForm.find({
     active: { $in: true },
+    userId: { $in: userId },
   }).populate("formQuestions");
 
   res.status(200).json({
