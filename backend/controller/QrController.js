@@ -70,7 +70,7 @@ exports.getAllSectionByMenuIdQr = async (req, res, next) => {
 exports.getAllItemBySectionIdQr = asyncHandler(async (req, res, next) => {
   let sectionId = req.params.id;
 
-  await Item.find({ sectionId: { $in: sectionId } })
+  await Item.find({ sectionId: { $in: sectionId }, active: true })
     .then((item) => {
       return res.status(200).json({
         success: true,
@@ -110,6 +110,7 @@ exports.getAllSubSectionBySectionIdQr = asyncHandler(async (req, res, next) => {
   try {
     const subSection = await SubSection.find({
       sectionId: { $in: sectionId },
+      sectionStatus: true,
     }).populate("item");
     res.status(200).json({
       success: true,
@@ -127,7 +128,7 @@ exports.getAllSubSectionBySectionIdQr = asyncHandler(async (req, res, next) => {
 //Get All Item by Subsection Qr ID ---Get
 exports.getAllItemBySubSectionIdQr = asyncHandler(async (req, res, next) => {
   let subSectionId = req.params.id;
-  SubSectionItem.find({ subSectionId: { $in: subSectionId } })
+  SubSectionItem.find({ subSectionId: { $in: subSectionId }, active: true })
     .then((item) => {
       res.status(200).json({
         success: true,
