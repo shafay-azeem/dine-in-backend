@@ -32,6 +32,6 @@ router.route("/getAllItemBySubSectionIdQr/:id").get(getAllItemBySubSectionIdQr);
 router.route("/getSingleSubItemQr/:id").get(getSingleSubItemQr);
 
 //FeedBack Form
-router.route("/getAllFormQr").get(getAllFormQr);
+router.route("/getAllFormQr/:id").get(getAllFormQr);
 
 module.exports = router;
