@@ -3,64 +3,85 @@ const sendMail = require("../utils/SendMail");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
+const asyncHandler = require("express-async-handler");
 
 //SignUp User --Post
-exports.createUser = async (req, res, next) => {
+exports.createUser = asyncHandler(async (req, res, next) => {
   const { name, email, password } = req.body;
 
-  const user = await User.create({
-    name,
-    email,
-    password,
-  });
-
-  return res.status(201).json({
-    success: true,
-    user,
-    message: "Signup Successfully",
-    token: user.getJwtToken(user._id),
-  });
-};
+  try {
+    const user = await User.create({
+      name,
+      email,
+      password,
+    });
+    return res.status(201).json({
+      success: true,
+      user,
+      message: "Signup Successfully",
+      token: user.getJwtToken(user._id),
+    });
+  } catch (err) {
+    if (err.name === "ValidationError") {
+      return res.status(400).json({
+        success: false,
+        error: "Validation Error",
+        message: err.message,
+      });
+    }
+    if (err.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        error: "Email already exists",
+      });
+    }
+    return res.status(500).json({
+      success: false,
+      error: "Internal Server Error",
+    });
+  }
+});
 
 //login --Post
-exports.loginUser = async (req, res, next) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.status(400).json({
+exports.loginUser = asyncHandler(async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Please Enter Your Email & Password",
+      });
+    }
+    const user = await User.findOne({ email }).select("+password");
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "USER is not found with this email and password",
+      });
+    }
+    const isPasswordMatched = await user.comparePassword(password);
+    if (!isPasswordMatched) {
+      return res.status(401).json({
+        success: false,
+        message: "USER is not found with this email and password",
+      });
+    }
+    return res.status(201).json({
+      success: true,
+      user,
+      message: "Login Successfully",
+      token: user.getJwtToken(user._id),
+    });
+  } catch (err) {
+    return res.status(500).json({
       success: false,
-      message: "Please Enter Your Email & Password",
+      error: "Internal Server Error",
     });
   }
-
-  const user = await User.findOne({ email }).select("+password");
-
-  if (!user) {
-    return res.status(401).json({
-      success: false,
-      message: "USER is not found with this email and password",
-    });
-  }
-
-  const isPasswordMatched = await user.comparePassword(password);
-
-  if (!isPasswordMatched) {
-    return res.status(401).json({
-      success: false,
-      message: "USER is not found with this email and password",
-    });
-  }
-
-  return res.status(201).json({
-    success: true,
-    user,
-    message: "Login Successfully",
-    token: user.getJwtToken(user._id),
-  });
-};
+});
 
 //Forgot Password --Post
-exports.forgotPassword = async (req, res, next) => {
+exports.forgotPassword = asyncHandler(async (req, res, next) => {
   const user = await User.findOne({ email: req.body.email });
 
   if (!user) {
@@ -106,10 +127,10 @@ exports.forgotPassword = async (req, res, next) => {
       message: error.message,
     });
   }
-};
+});
 
 //Reset Password --Post
-exports.resetPassword = async (req, res, next) => {
+exports.resetPassword = asyncHandler(async (req, res, next) => {
   //Create Token Hash
   const resetPasswordToken = crypto
     .createHash("sha256")
@@ -148,68 +169,95 @@ exports.resetPassword = async (req, res, next) => {
     success: true,
     user,
   });
-};
+});
 
 //Update User --Post
-exports.updateProfile = async (req, res, next) => {
+exports.updateProfile = asyncHandler(async (req, res, next) => {
   const newUserData = {
     name: req.body.name,
     email: req.body.email,
   };
 
-  const user = await User.findByIdAndUpdate(req.user.id, newUserData, {
-    new: true,
-    runValidators: true,
-    useFindAndModify: false,
-  });
-
-  return res.status(200).json({
-    success: true,
-    user,
-  });
-};
+  try {
+    const user = await User.findByIdAndUpdate(req.user.id, newUserData, {
+      new: true,
+      runValidators: true,
+      useFindAndModify: false,
+    });
+    return res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+});
 
 //Delete User --Post
-exports.deleteUser = async (req, res, next) => {
+exports.deleteUser = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.params.id);
-
   if (!user) {
     return res.status(400).json({
       success: false,
       message: "User is not found with this id",
     });
   }
-
-  await user.remove();
-
-  res.status(200).json({
-    success: true,
-    message: "User deleted successfully",
-  });
-};
+  try {
+    await user.remove();
+    res.status(200).json({
+      success: true,
+      message: "User deleted successfully",
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+});
 
 //Get All Users --Get
-exports.getAllUsers = async (req, res, next) => {
-  const users = await User.find();
-
+exports.getAllUsers = asyncHandler(async (req, res, next) => {
+  const users = await User.find().catch((err) => {
+    return res.status(400).json({
+      success: false,
+      message: err.message,
+    });
+  });
+  if (!users) {
+    return res.status(404).json({
+      success: false,
+      message: "Users not found",
+    });
+  }
   res.status(200).json({
     success: true,
     users,
   });
-};
+});
 
 //Delete All Users
-exports.deleteAllUsers = async (req, res) => {
-  let users = await User.deleteMany();
-
-  res.status(200).json({
-    success: true,
-    message: "All Users Deleted Successfully",
-  });
-};
+exports.deleteAllUsers = asyncHandler(async (req, res, next) => {
+  let users;
+  try {
+    users = await User.deleteMany();
+    res.status(200).json({
+      success: true,
+      message: "All Users Deleted Successfully",
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+});
 
 //User Detail --Get
-exports.userDetail = async (req, res, next) => {
+exports.userDetail = asyncHandler(async (req, res, next) => {
   const token = req.headers.authorization.split(" ")[1];
   if (!token) {
     return res
@@ -254,10 +302,10 @@ exports.userDetail = async (req, res, next) => {
       });
     }
   });
-};
+});
 
 //Logout User --Get
-exports.logout = async (req, res, next) => {
+exports.logout = asyncHandler(async (req, res, next) => {
   //console.log(process.env.JWT_SECRET_KEY);
   //Verify JWT
   jwt.verify(
@@ -275,4 +323,4 @@ exports.logout = async (req, res, next) => {
       res.status(200).send({ message: "Successfully logged out" });
     }
   );
-};
+});

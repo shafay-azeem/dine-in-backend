@@ -1,92 +1,151 @@
 const Modifier = require("../models/ModifierModel");
+const asyncHandler = require("express-async-handler");
 
 //Create Menu ---Post
-exports.createModifier = async (req, res, next) => {
-  const { Groupname, modifiers } = req.body;
+exports.createModifier = asyncHandler(async (req, res, next) => {
+  try {
+    const { Groupname, modifiers } = req.body;
+    const modifier = await Modifier.create({
+      userName: req.user.name,
+      userId: req.user._id,
+      Groupname,
+      modifiers,
+    });
 
-  const modifier = await Modifier.create({
-    userName: req.user.name,
-    userId: req.user._id,
-    Groupname,
-    modifiers,
-  });
-
-  res.status(201).json({
-    success: true,
-    message: "Modifier Created Successfully",
-    modifier,
-  });
-};
+    res.status(201).json({
+      success: true,
+      message: "Modifier Created Successfully",
+      modifier,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+});
 
 //Update Modifier By Id
-exports.updateModifier = async (req, res) => {
+exports.updateModifier = asyncHandler(async (req, res, next) => {
   let modifier = await Modifier.findById(req.params.id);
 
-  if (!modifier) {
+  try {
+    if (!modifier) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Id",
+      });
+    }
+    modifier = await Modifier.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+      useUnified: false,
+    });
+    res.status(200).json({
+      success: true,
+      message: "Modifier Update Successfully",
+      modifier,
+    });
+  } catch (err) {
     return res.status(500).json({
       success: false,
-      message: "Invalid Id",
+      message: "Error while updating modifier. Please try again later.",
+      error: err.message,
     });
   }
-  modifier = await Modifier.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-    useUnified: false,
-  });
-
-  res.status(200).json({
-    success: true,
-    message: "Modifier Update Successfully",
-    modifier,
-  });
-};
+});
 
 //Delete Modifier By Id
-exports.deleteModifierById = async (req, res) => {
-  let modifier = await Modifier.findById(req.params.id);
+exports.deleteModifierById = asyncHandler(async (req, res, next) => {
+  let modifier;
+  try {
+    modifier = await Modifier.findById(req.params.id);
+    if (!modifier) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Id",
+      });
+    }
 
-  if (!modifier) {
+    await modifier.remove();
+
+    res.status(200).json({
+      success: true,
+      message: "Modifier deleted successfully",
+    });
+  } catch (err) {
     return res.status(500).json({
       success: false,
-      message: "Invalid Id",
+      message: "Error while deleting modifier. Please try again later.",
+      error: err.message,
     });
   }
-
-  await modifier.remove();
-
-  res.status(200).json({
-    success: true,
-    message: "Modifier deleted successfully",
-  });
-};
+});
 
 //Get Single Modifier By Id ---Get
-exports.getSingleModifer = async (req, res, next) => {
+exports.getSingleModifer = asyncHandler(async (req, res, next) => {
   let modifierId = req.params.id;
-  const modifier = await Modifier.findById(modifierId);
+  try {
+    const modifier = await Modifier.findById(modifierId);
 
-  res.status(200).json({
-    success: true,
-    modifier,
-  });
-};
+    if (!modifier) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Id",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      modifier,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: "Error while fetching modifier. Please try again later.",
+      error: err.message,
+    });
+  }
+});
 
 //Get All Modifier ---Get
-exports.getAllModifier = async (req, res, next) => {
-  const modifier = await Modifier.find({ userId: { $in: req.user.id } });
+exports.getAllModifier = asyncHandler(async (req, res, next) => {
+  try {
+    const modifier = await Modifier.find({ userId: { $in: req.user.id } });
 
-  res.status(200).json({
-    success: true,
-    modifier,
-  });
-};
+    res.status(200).json({
+      success: true,
+      modifier,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
 
 //Delete All Menu
-exports.deleteAllModifiers = async (req, res) => {
+exports.deleteAllModifiers = asyncHandler(async (req, res, next) => {
   let modifier = await Modifier.deleteMany();
 
-  res.status(200).json({
-    success: true,
-    message: "All Modifier Deleted Successfully",
-  });
-};
+  try {
+    if (!modifier) {
+      return res.status(400).json({
+        success: false,
+        message: "No modifier found",
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: "All Modifier Deleted Successfully",
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: "Error while deleting modifier. Please try again later.",
+      error: err.message,
+    });
+  }
+});

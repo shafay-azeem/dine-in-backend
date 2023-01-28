@@ -7,6 +7,7 @@ const app = express();
 if (!fs.existsSync("uploads")) {
   fs.mkdirSync("uploads");
 }
+
 app.use("/uploads", express.static("uploads"));
 app.use(express.json());
 

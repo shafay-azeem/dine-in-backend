@@ -60,6 +60,9 @@ const subSectionItemSchema = new mongoose.Schema({
   itemCalories: {
     type: String,
   },
+  video: {
+    type: String,
+  },
   itemPriceOption: [
     {
       name: {

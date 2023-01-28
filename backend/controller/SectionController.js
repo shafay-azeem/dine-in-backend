@@ -1,38 +1,45 @@
 const Section = require("../models/SectionModel");
 const Menu = require("../models/MenuModel");
 const Item = require("../models/ItemModal");
+const asyncHandler = require("express-async-handler");
 
 //Create Section ---Post
-exports.createSection = async (req, res, next) => {
-  const {
-    sectionName,
-    sectionDescription,
-    sectionNote,
-    sectionLabel,
-    sectionStatus,
-    sectionToggle,
-    sectionImage,
-  } = req.body;
+exports.createSection = asyncHandler(async (req, res, next) => {
+  try {
+    const {
+      sectionName,
+      sectionDescription,
+      sectionNote,
+      sectionLabel,
+      sectionStatus,
+      sectionToggle,
+      sectionImage,
+    } = req.body;
 
-  const section = await Section.create({
-    sectionName,
-    sectionDescription,
-    sectionNote,
-    sectionLabel,
-    sectionStatus,
-    sectionToggle,
-    sectionImage,
+    const section = await Section.create({
+      sectionName,
+      sectionDescription,
+      sectionNote,
+      sectionLabel,
+      sectionStatus,
+      sectionToggle,
+      sectionImage,
+      menuId: req.params.id,
+    });
 
-    menuId: req.params.id,
-  });
+    await updateMenu(req.params.id, section);
 
-  await updateMenu(req.params.id, section);
-
-  res.status(201).json({
-    success: true,
-    section,
-  });
-};
+    res.status(201).json({
+      success: true,
+      section,
+    });
+  } catch (err) {
+    return res.status(400).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
 
 //Update Function
 async function updateMenu(menuId, sectionRes) {
@@ -42,53 +49,72 @@ async function updateMenu(menuId, sectionRes) {
 }
 
 //Delete Section ---Delete
-exports.deleteSection = async (req, res) => {
+exports.deleteSection = asyncHandler(async (req, res, next) => {
   let section = await Section.findById(req.params.id);
-
   if (!section) {
-    return res.status(500).json({
+    return res.status(400).json({
       success: false,
       message: "Invalid Id",
     });
   }
-
-  await section.remove();
-
+  try {
+    await section.remove();
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
   res.status(200).json({
     success: true,
     message: "Section deleted successfully",
   });
-};
+});
 
 //Delete All Section
-exports.deleteAllSection = async (req, res) => {
-  let section = await Section.deleteMany();
-
-  res.status(200).json({
-    success: true,
-    message: "All Section Deleted Successfully",
-  });
-};
+exports.deleteAllSection = asyncHandler(async (req, res, next) => {
+  let section;
+  try {
+    section = await Section.deleteMany();
+    res.status(200).json({
+      success: true,
+      message: "All Section Deleted Successfully",
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
 
 //Get All Section ---Get
-exports.getAllSection = async (req, res, next) => {
-  const section = await Section.find()
-    .populate("item")
-    .populate({
-      path: "subSection", // populate subsectionsection
-      populate: {
-        path: "item", // in section, populate item
-      },
+exports.getAllSection = asyncHandler(async (req, res, next) => {
+  let section;
+  try {
+    section = await Section.find()
+      .populate("item")
+      .populate({
+        path: "subSection", // populate subsectionsection
+        populate: {
+          path: "item", // in section, populate item
+        },
+      });
+  } catch (err) {
+    return res.status(400).json({
+      success: false,
+      message: err.message,
     });
+  }
 
   res.status(200).json({
     success: true,
     section,
   });
-};
+});
 
 //Get All Section By Menu Id ---Get
-exports.getAllSectionByMenuId = async (req, res, next) => {
+exports.getAllSectionByMenuId = asyncHandler(async (req, res, next) => {
   try {
     let menuId = req.params.id;
 
@@ -113,72 +139,71 @@ exports.getAllSectionByMenuId = async (req, res, next) => {
       error: err.message,
     });
   }
-};
-// exports.getAllSectionByMenuId = async (req, res, next) => {
-//   let menuId = req.params.id;
-
-//   await Section.find({ menuId: { $in: ObjectID(menuId) } })
-//     .populate("item")
-//     .populate({
-//       path: "subSection", // populate subsectionsection
-//       populate: {
-//         path: "item", // in section, populate item
-//       },
-//     })
-//     .then((section) => {
-//       return res.status(200).json({
-//         success: true,
-//         section,
-//       });
-//     });
-
-// };
+});
 
 //Get Single Section ---Get
-exports.getSingleSection = async (req, res, next) => {
+exports.getSingleSection = asyncHandler(async (req, res, next) => {
   let sectionId = req.params.id;
-
-  const section = await Section.findById(sectionId)
+  await Section.findById(sectionId)
     .populate("item")
     .populate({
       path: "subSection", // populate subsectionsection
       populate: {
         path: "item", // in section, populate item
       },
+    })
+    .then((section) => {
+      if (!section) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid section Id",
+        });
+      }
+      return res.status(200).json({
+        success: true,
+        section,
+      });
+    })
+    .catch((err) => {
+      return res.status(400).json({
+        success: false,
+        message: "Something went wrong",
+        error: err,
+      });
     });
-
-  res.status(200).json({
-    success: true,
-    section,
-  });
-};
+});
 
 //Update Section By Id
-exports.updateSection = async (req, res) => {
-  let section = await Section.findById(req.params.id);
-
-  if (!section) {
-    return res.status(500).json({
+exports.updateSection = asyncHandler(async (req, res, next) => {
+  let section;
+  try {
+    section = await Section.findById(req.params.id);
+    if (!section) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Id",
+      });
+    }
+    section = await Section.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+      useFindAndModify: false,
+    })
+      .populate("item")
+      .populate({
+        path: "subSection", // populate subsectionsection
+        populate: {
+          path: "item", // in section, populate item
+        },
+      });
+    res.status(200).json({
+      success: true,
+      section,
+    });
+  } catch (err) {
+    res.status(400).json({
       success: false,
-      message: "Invalid Id",
+      message: err.message,
     });
   }
-
-  section = await Section.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-    useUnified: false,
-  })
-    .populate("item")
-    .populate({
-      path: "subSection", // populate subsectionsection
-      populate: {
-        path: "item", // in section, populate item
-      },
-    });
-
-  res.status(200).json({
-    success: true,
-    section,
-  });
-};
+});

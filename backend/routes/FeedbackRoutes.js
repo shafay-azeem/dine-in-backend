@@ -15,6 +15,7 @@ const {
   deleteSingleQuestion,
   updateFormQuestion,
   getAllResults,
+  updateFormStatus,
 } = require("../controller/FeedbackFormController");
 const { isAuthenticatedUser } = require("../middleware/auth");
 const router = express.Router();
@@ -22,6 +23,7 @@ const router = express.Router();
 //Feedback
 router.route("/createfeedback").post(isAuthenticatedUser, createFeedbackForm);
 router.route("/updateform/:id").put(isAuthenticatedUser, updateForm);
+router.route("/updateStatus/:id").put(isAuthenticatedUser, updateFormStatus);
 router.route("/getallform").get(isAuthenticatedUser, getAllForm);
 router.route("/getsingleform/:id").get(isAuthenticatedUser, getSingleForm);
 router.route("/deleteallform").delete(deleteAllForm);

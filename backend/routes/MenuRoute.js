@@ -7,6 +7,7 @@ const {
   updateMenu,
   deleteAllMenu,
   getAllMenu,
+  getAllMenuQr,
 } = require("../controller/MenuController");
 const {
   createSection,
