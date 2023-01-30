@@ -7,13 +7,17 @@ const asyncHandler = require("express-async-handler");
 
 //SignUp User --Post
 exports.createUser = asyncHandler(async (req, res, next) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, resName, resImage } = req.body;
+
+  // console.log(req.body)
 
   try {
     const user = await User.create({
       name,
       email,
       password,
+      resName,
+      resImage
     });
     return res.status(201).json({
       success: true,

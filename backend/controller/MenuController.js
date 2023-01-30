@@ -16,6 +16,8 @@ exports.createMenu = asyncHandler(async (req, res, next) => {
     const menu = await Menu.create({
       userName: req.user.name,
       userId: req.user._id,
+      userResturant: req.user.resName,
+      userResturantImage: req.user.resImage,
       menuName,
       menuDescription,
       menuNote,

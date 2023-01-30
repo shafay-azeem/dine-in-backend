@@ -10,6 +10,12 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
   },
+  resName: {
+    type: String,
+  },
+  resImage: {
+    type: String,
+  },
   password: {
     type: String,
   },

@@ -11,6 +11,14 @@ const menuSchema = new mongoose.Schema({
     type: mongoose.Schema.ObjectId,
     ref: "User",
   },
+  userResturant: {
+    type: String,
+    ref: "User",
+  },
+  userResturantImage: {
+    type: String,
+    ref: "User",
+  },
   menuName: {
     type: String,
   },
