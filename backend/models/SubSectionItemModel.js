@@ -18,6 +18,10 @@ const subSectionItemSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  activeNutritionInfo: {
+    type: Boolean,
+    default: false,
+  },
   itemCalorie: {
     type: String,
   },
