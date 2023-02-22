@@ -140,6 +140,12 @@ exports.deleteCartItem = asyncHandler(async (req, res, next) => {
       });
     }
     await cart.cartItems.pull({ _id: cartDocId });
+
+    cart.total_Price = cart.cartItems.reduce(
+      (acc, cur) => acc + cur.itemPrice_Total,
+      0
+    );
+
     await cart.save()
 
     res.status(200).json({
@@ -158,41 +164,31 @@ exports.deleteCartItem = asyncHandler(async (req, res, next) => {
 exports.cartIncrementDecrement = async (req, res, next) => {
   const cartDocId = req.params.cartDocId;
   const cartId = req.query.cartId;
-  const cartStatus = req.query.status;
-
-
+  const cartStatus = req.query.cartStatus || "decrement";
   let cart = await Cart.findById(cartId);
-  const cartItem = cart.cartItems.find(item => item._id == cartDocId);
-
+  const cartItem = cart.cartItems.find((item) => item._id == cartDocId);
   if (!cartItem) {
     return res.status(404).json({
-      message: "Cart item not found"
+      message: "Cart item not found",
     });
   }
-
   let itemQty = cartItem.item_Qty;
   let itemPrice = cartItem.item_Price;
   let itemTotalPrice = itemQty * itemPrice;
-
   if (cartStatus == "increment") {
     itemQty += 1;
   } else {
     itemQty -= 1;
   }
-
   itemTotalPrice = itemQty * itemPrice;
-
   cartItem.item_Qty = itemQty;
   cartItem.itemPrice_Total = itemTotalPrice;
-
   cart.total_Price = cart.cartItems.reduce(
     (acc, cur) => acc + cur.itemPrice_Total,
     0
   );
-
   cart = await cart.save();
-
   res.json({
     message: "Cart item updated successfully",
   });
-}
+};
