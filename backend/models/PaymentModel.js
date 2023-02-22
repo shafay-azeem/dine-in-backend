@@ -1,6 +1,10 @@
 const mongoose = require("mongoose");
 
 const PaymentSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.ObjectId,
+    ref: "User",
+  },
   order_Id: {
     type: mongoose.Schema.ObjectId,
     ref: "Order",
@@ -23,10 +27,7 @@ const PaymentSchema = new mongoose.Schema({
   payment_status: {
     type: String,
   },
-  createAt: {
-    type: Date,
-    default: Date.now(),
-  },
-});
+
+}, { timestamps: true });
 
 module.exports = mongoose.model("Payment", PaymentSchema);

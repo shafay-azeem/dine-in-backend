@@ -4,6 +4,7 @@ const Order = require("../models/OrderModel");
 
 //Create Order ---Post
 exports.createOrder = asyncHandler(async (req, res, next) => {
+  let userId = req.params.id;
   const {
     customerName,
     tableNumber,
@@ -19,6 +20,7 @@ exports.createOrder = asyncHandler(async (req, res, next) => {
   });
 
   const order = new Order({
+    userId: userId,
     customerName,
     tableNumber,
     orderedItems,
@@ -49,13 +51,8 @@ async function removeCartByTableNumber(tableNumber) {
     console.error(`Error deleting cart for table ${tableNumber}:`, err);
   }
 }
-// async function removeCartItem(itemId) {
-//   try {
-//     await Cart.findOneAndDelete({ item_Id: itemId });
-//   } catch (err) {
-//     console.error(`Error deleting item with id ${itemId}:`, err);
-//   }
-// }
+
+
 
 //Get Single Order ---Get
 exports.getSingleOrder = asyncHandler(async (req, res, next) => {
@@ -80,4 +77,61 @@ exports.getSingleOrder = asyncHandler(async (req, res, next) => {
       error: error.message,
     });
   }
+
+
 });
+
+exports.getPaidUnpaidOrders = asyncHandler(async (req, res, next) => {
+  let userId = req.params.id;
+  let status = req.query.paymentStatus;
+  const currentPage = req.query.page || 1
+  const perPage = 7
+  try {
+    if (status === "Success") {
+      let totalOrders = await Order.find({ userId: { $in: userId }, paymentStatus: status }).countDocuments();
+      const orders = await Order.find({ userId: { $in: userId }, paymentStatus: status }).skip((currentPage - 1) * perPage).limit(perPage)
+      res.status(200).json({ message: 'succefully get paid orders', orders: orders, totalOrders: totalOrders })
+    }
+    else {
+      let totalOrders = await Order.find({ userId: { $in: userId }, paymentStatus: status }).countDocuments()
+      const orders = await Order.find({ userId: { $in: userId }, paymentStatus: status }).skip((currentPage - 1) * perPage).limit(perPage)
+      res.status(200).json({ message: 'succefully get unpaid orders', orders: orders, totalOrders: totalOrders })
+    }
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      error: err.message,
+    });
+
+  }
+
+})
+
+exports.filterOrder = asyncHandler(async (req, res, next) => {
+  let userId = req.params.id;
+  let date = req.query.date;
+  let status = req.query.paymentStatus;
+  const today = new Date(date);
+  today.setUTCHours(0, 0, 0, 0)
+
+  try {
+    // console.log(date, 'date')
+    const orders = await Order.find({
+      userId: { $in: userId },
+      createdAt: {
+        $gte: today,
+        $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000) // set the end of the day to 24 hours after the beginning of the day
+      },
+      paymentStatus: status
+    });
+
+    res.status(200).json({ message: 'Orders Fetched', orders: orders })
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      error: err.message,
+    });
+  }
+
+
+})

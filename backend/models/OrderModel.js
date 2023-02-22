@@ -1,6 +1,10 @@
 const mongoose = require("mongoose");
 
 const OrderSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.ObjectId,
+    ref: "User",
+  },
   customerName: {
     type: String,
   },
@@ -44,10 +48,7 @@ const OrderSchema = new mongoose.Schema({
   paymentStatus: {
     type: String,
   },
-  createAt: {
-    type: Date,
-    default: Date.now(),
-  },
-});
+
+}, { timestamps: true });
 
 module.exports = mongoose.model("Order", OrderSchema);
