@@ -124,6 +124,36 @@ exports.deleteCart = asyncHandler(async (req, res, next) => {
   }
 });
 
+//Delete Cart Item
+
+
+//Delete Cart By Cart Id
+exports.deleteCartItem = asyncHandler(async (req, res, next) => {
+  const cartDocId = req.params.cartDocId;
+  const cartId = req.query.cartId;
+  try {
+    let cart = await Cart.findById(cartId);
+    if (!cart) {
+      return res.status(404).json({
+        success: false,
+        message: "Cart not found with this Id",
+      });
+    }
+    await cart.cartItems.pull({ _id: cartDocId });
+    await cart.save()
+
+    res.status(200).json({
+      success: true,
+      message: "Cart Item deleted successfully",
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
 
 exports.cartIncrementDecrement = async (req, res, next) => {
   const cartDocId = req.params.cartDocId;
