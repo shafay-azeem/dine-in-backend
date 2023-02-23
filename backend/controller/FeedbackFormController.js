@@ -220,8 +220,6 @@ exports.createFormQuestion = asyncHandler(async (req, res, next) => {
       Questions,
     });
 
-    console.log(req.params.id);
-
     await updateFormQuestion(req.params.id, formQuestion);
 
     res.status(201).json({
@@ -392,8 +390,6 @@ exports.getAllResults = asyncHandler(async (req, res, next) => {
     const formResponse = await FormResponse.find({
       userId: { $in: req.user.id },
     });
-
-    console.log(formResponse);
 
     res.status(200).json({
       success: true,

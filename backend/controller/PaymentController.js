@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const Order = require("../models/OrderModel");
 const Payment = require("../models/PaymentModel");
+const mongoose = require("mongoose");
 
 //Make Payment --Post
 exports.makePayment = asyncHandler(async (req, res, next) => {
@@ -47,19 +48,16 @@ exports.makePayment = asyncHandler(async (req, res, next) => {
   }
 });
 
-
 //get PaymentListAll
 exports.getAllPayment = asyncHandler(async (req, res, next) => {
   try {
-    const payments = await Payment.find({ userId: req.params.userId });
+    const payments = await Payment.find({ userId: req.params.id });
     res.status(200).json({ payments: payments });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Server error" });
   }
-})
-
-
+});
 
 //getSingleDatePayment
 exports.getSingleDatePayment = asyncHandler(async (req, res, next) => {
@@ -69,9 +67,8 @@ exports.getSingleDatePayment = asyncHandler(async (req, res, next) => {
   const endOfToday = new Date(today.getTime() + 24 * 60 * 60 * 1000); // Set the time to the end of the current day
 
   try {
-
     const payments = await Payment.find({
-      userId: req.params.userId,
+      userId: req.params.id,
       createdAt: {
         $gte: today,
         $lt: endOfToday,
@@ -82,22 +79,26 @@ exports.getSingleDatePayment = asyncHandler(async (req, res, next) => {
     console.error(error);
     res.status(500).json({ error: "Server error" });
   }
-})
-
+});
 
 //getSingleDatePayment
 exports.getMultiDatePayment = asyncHandler(async (req, res, next) => {
-  let date = req.query.date;
-
   const startDate = new Date(req.query.startDate);
   const endDate = new Date(req.query.endDate);
-  const start = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
-  const end = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate() + 1);
+  const start = new Date(
+    startDate.getFullYear(),
+    startDate.getMonth(),
+    startDate.getDate()
+  );
+  const end = new Date(
+    endDate.getFullYear(),
+    endDate.getMonth(),
+    endDate.getDate() + 1
+  );
 
   try {
-
     const payments = await Payment.find({
-      userId: req.params.userId,
+      userId: req.params.id,
       createdAt: { $gte: start, $lt: end },
     });
     res.status(200).json({ payments: payments });
@@ -105,17 +106,10 @@ exports.getMultiDatePayment = asyncHandler(async (req, res, next) => {
     console.error(error);
     res.status(500).json({ error: "Server error" });
   }
-})
-
-
-
-
-
-
+});
 
 //Get Payment Detail By Id --Get
 exports.getPaymentDetail = asyncHandler(async (req, res) => {
-
   let paymentId = req.params.id;
   try {
     const payment = await Payment.findById(paymentId);
@@ -143,22 +137,30 @@ exports.getPaymentDetail = asyncHandler(async (req, res) => {
 exports.getRevenueOnDailyBasis = asyncHandler(async (req, res) => {
   let userId = req.params.id;
   const date = new Date(req.query.date);
-  const startOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  const endOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
+  const startOfDay = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate()
+  );
+  const endOfDay = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate() + 1
+  );
   try {
     await Payment.aggregate([
       {
         $match: {
-          userId: { $in: userId },
-          createdAt: { $gte: startOfDay, $lt: endOfDay }
-        }
+          userId: mongoose.Types.ObjectId(userId),
+          createdAt: { $gte: startOfDay, $lt: endOfDay },
+        },
       },
       {
         $group: {
           _id: null,
-          totalRevenue: { $sum: "$amount" }
-        }
-      }
+          totalRevenue: { $sum: "$amount" },
+        },
+      },
     ]).exec((err, result) => {
       if (err) {
         res.status(400).json({
@@ -186,29 +188,37 @@ exports.getRevenueOnDailyBasis = asyncHandler(async (req, res) => {
       error: error.message,
     });
   }
-})
+});
 
 //range
 exports.revenueRange = asyncHandler(async (req, res) => {
   let userId = req.params.id;
   const startDate = new Date(req.query.startDate);
   const endDate = new Date(req.query.endDate);
-  const start = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
-  const end = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate() + 1);
+  const start = new Date(
+    startDate.getFullYear(),
+    startDate.getMonth(),
+    startDate.getDate()
+  );
+  const end = new Date(
+    endDate.getFullYear(),
+    endDate.getMonth(),
+    endDate.getDate() + 1
+  );
   try {
     await Payment.aggregate([
       {
         $match: {
-          userId: { $in: userId },
-          createdAt: { $gte: start, $lt: end }
-        }
+          userId: mongoose.Types.ObjectId(userId),
+          createdAt: { $gte: start, $lt: end },
+        },
       },
       {
         $group: {
           _id: null,
-          totalRevenue: { $sum: "$amount" }
-        }
-      }
+          totalRevenue: { $sum: "$amount" },
+        },
+      },
     ]).exec((err, result) => {
       if (err) {
         res.status(400).json({
@@ -222,8 +232,7 @@ exports.revenueRange = asyncHandler(async (req, res) => {
             success: true,
             totalRevenue,
           });
-        }
-        else {
+        } else {
           res.status(200).json({
             success: true,
             message: "No revenue on entered date",
@@ -237,7 +246,7 @@ exports.revenueRange = asyncHandler(async (req, res) => {
       error: error.message,
     });
   }
-})
+});
 
 //total
 exports.totalRevenue = asyncHandler(async (req, res) => {
@@ -246,20 +255,20 @@ exports.totalRevenue = asyncHandler(async (req, res) => {
     const totalAmount = await Payment.aggregate([
       {
         $match: {
-          userId: { $in: userId }
-        }
+          userId: mongoose.Types.ObjectId(userId),
+        },
       },
       {
         $group: {
           _id: null,
-          total: { $sum: "$amount" }
-        }
-      }
+          total: { $sum: "$amount" },
+        },
+      },
     ]);
 
     res.json({ totalAmount: totalAmount[0]?.total });
   } catch (err) {
-    console.error(err);
-    res.status(500).send('Server error');
+    console.error(err.message);
+    res.status(500).send("Server error");
   }
 });

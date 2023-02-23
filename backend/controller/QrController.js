@@ -58,7 +58,6 @@ exports.getAllSectionByMenuIdQr = async (req, res, next) => {
     })
 
     .then((section) => {
-      console.log(section.length);
       return res.status(200).json({
         success: true,
         section,
