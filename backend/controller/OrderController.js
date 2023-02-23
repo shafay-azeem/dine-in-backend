@@ -154,3 +154,43 @@ exports.filterOrder = asyncHandler(async (req, res, next) => {
 
 
 })
+
+
+
+exports.rangeOrder = asyncHandler(async (req, res, next) => {
+  let userId = req.params.id;
+  let status = req.query.paymentStatus;
+
+  const startDate = new Date(req.query.startDate);
+  const endDate = new Date(req.query.endDate);
+  const start = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+  const end = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate() + 1);
+
+  const currentPage = req.query.page || 1
+  const perPage = 20
+  try {
+    // console.log(date, 'date')
+    if (status == "Payment Paid" || status == "Pending") {
+      const orders = await Order.find({
+        userId: { $in: userId },
+        createdAt: { $gte: start, $lt: end },
+        paymentStatus: status
+      }).skip((currentPage - 1) * perPage).limit(perPage);
+      res.status(200).json({ message: 'Orders Fetched', orders: orders })
+    } else {
+      const orders = await Order.find({
+        userId: { $in: userId },
+        createdAt: { $gte: start, $lt: end },
+      }).skip((currentPage - 1) * perPage).limit(perPage);
+      res.status(200).json({ message: 'Orders Fetched', orders: orders })
+    }
+
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      error: err.message,
+    });
+  }
+
+
+})
