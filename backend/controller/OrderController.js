@@ -85,7 +85,7 @@ exports.getPaidUnpaidOrders = asyncHandler(async (req, res, next) => {
   let userId = req.params.id;
   let status = req.query.paymentStatus;
   const currentPage = req.query.page || 1
-  const perPage = 7
+  const perPage = 20
   try {
     if (status === "Payment Paid") {
       let totalOrders = await Order.find({ userId: { $in: userId }, paymentStatus: status }).countDocuments();
@@ -99,6 +99,7 @@ exports.getPaidUnpaidOrders = asyncHandler(async (req, res, next) => {
       res.status(200).json({ message: 'succefully get unpaid orders', orders: orders, totalOrders: totalOrders })
     }
     else {
+
       let totalOrders = await Order.find({ userId: { $in: userId } }).countDocuments()
       const orders = await Order.find({ userId: { $in: userId } }).skip((currentPage - 1) * perPage).limit(perPage)
       res.status(200).json({ message: 'succefully get unpaid orders', orders: orders, totalOrders: totalOrders })
