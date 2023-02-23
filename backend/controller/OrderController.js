@@ -52,8 +52,6 @@ async function removeCartByTableNumber(tableNumber) {
   }
 }
 
-
-
 //Get Single Order ---Get
 exports.getSingleOrder = asyncHandler(async (req, res, next) => {
   let orderId = req.params.id;
@@ -77,51 +75,75 @@ exports.getSingleOrder = asyncHandler(async (req, res, next) => {
       error: error.message,
     });
   }
-
-
 });
 
 exports.getPaidUnpaidOrders = asyncHandler(async (req, res, next) => {
   let userId = req.params.id;
   let status = req.query.paymentStatus;
-  const currentPage = req.query.page || 1
-  const perPage = 20
+  const currentPage = req.query.page || 1;
+  const perPage = 20;
   try {
     if (status === "Payment Paid") {
-      let totalOrders = await Order.find({ userId: { $in: userId }, paymentStatus: status }).countDocuments();
-      const orders = await Order.find({ userId: { $in: userId }, paymentStatus: status }).skip((currentPage - 1) * perPage).limit(perPage)
-      res.status(200).json({ message: 'succefully get paid orders', orders: orders, totalOrders: totalOrders })
-    }
-    else if (status === "Pending") {
-
-      let totalOrders = await Order.find({ userId: { $in: userId }, paymentStatus: status }).countDocuments()
-      const orders = await Order.find({ userId: { $in: userId }, paymentStatus: status }).skip((currentPage - 1) * perPage).limit(perPage)
-      res.status(200).json({ message: 'succefully get unpaid orders', orders: orders, totalOrders: totalOrders })
-    }
-    else {
-
-      let totalOrders = await Order.find({ userId: { $in: userId } }).countDocuments()
-      const orders = await Order.find({ userId: { $in: userId } }).skip((currentPage - 1) * perPage).limit(perPage)
-      res.status(200).json({ message: 'succefully get unpaid orders', orders: orders, totalOrders: totalOrders })
+      let totalOrders = await Order.find({
+        userId: { $in: userId },
+        paymentStatus: status,
+      }).countDocuments();
+      const orders = await Order.find({
+        userId: { $in: userId },
+        paymentStatus: status,
+      })
+        .skip((currentPage - 1) * perPage)
+        .limit(perPage);
+      res.status(200).json({
+        message: "succefully get paid orders",
+        orders: orders,
+        totalOrders: totalOrders,
+      });
+    } else if (status === "Pending") {
+      let totalOrders = await Order.find({
+        userId: { $in: userId },
+        paymentStatus: status,
+      }).countDocuments();
+      const orders = await Order.find({
+        userId: { $in: userId },
+        paymentStatus: status,
+      })
+        .skip((currentPage - 1) * perPage)
+        .limit(perPage);
+      res.status(200).json({
+        message: "succefully get unpaid orders",
+        orders: orders,
+        totalOrders: totalOrders,
+      });
+    } else {
+      let totalOrders = await Order.find({
+        userId: { $in: userId },
+      }).countDocuments();
+      const orders = await Order.find({ userId: { $in: userId } })
+        .skip((currentPage - 1) * perPage)
+        .limit(perPage);
+      res.status(200).json({
+        message: "succefully get unpaid orders",
+        orders: orders,
+        totalOrders: totalOrders,
+      });
     }
   } catch (err) {
     res.status(500).json({
       success: false,
       error: err.message,
     });
-
   }
-
-})
+});
 
 exports.filterOrder = asyncHandler(async (req, res, next) => {
   let userId = req.params.id;
   let date = req.query.date;
   let status = req.query.paymentStatus;
   const today = new Date(date);
-  today.setUTCHours(0, 0, 0, 0)
-  const currentPage = req.query.page || 1
-  const perPage = 20
+  today.setUTCHours(0, 0, 0, 0);
+  const currentPage = req.query.page || 1;
+  const perPage = 20;
   try {
     // console.log(date, 'date')
     if (status == "Payment Paid" || status == "Pending") {
@@ -129,33 +151,32 @@ exports.filterOrder = asyncHandler(async (req, res, next) => {
         userId: { $in: userId },
         createdAt: {
           $gte: today,
-          $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000) // set the end of the day to 24 hours after the beginning of the day
+          $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000), // set the end of the day to 24 hours after the beginning of the day
         },
-        paymentStatus: status
-      }).skip((currentPage - 1) * perPage).limit(perPage);
-      res.status(200).json({ message: 'Orders Fetched', orders: orders })
+        paymentStatus: status,
+      })
+        .skip((currentPage - 1) * perPage)
+        .limit(perPage);
+      res.status(200).json({ message: "Orders Fetched", orders: orders });
     } else {
       const orders = await Order.find({
         userId: { $in: userId },
         createdAt: {
           $gte: today,
-          $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000) // set the end of the day to 24 hours after the beginning of the day
+          $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000), // set the end of the day to 24 hours after the beginning of the day
         },
-      }).skip((currentPage - 1) * perPage).limit(perPage);
-      res.status(200).json({ message: 'Orders Fetched', orders: orders })
+      })
+        .skip((currentPage - 1) * perPage)
+        .limit(perPage);
+      res.status(200).json({ message: "Orders Fetched", orders: orders });
     }
-
   } catch (err) {
     res.status(500).json({
       success: false,
       error: err.message,
     });
   }
-
-
-})
-
-
+});
 
 exports.rangeOrder = asyncHandler(async (req, res, next) => {
   let userId = req.params.id;
@@ -163,52 +184,69 @@ exports.rangeOrder = asyncHandler(async (req, res, next) => {
 
   const startDate = new Date(req.query.startDate);
   const endDate = new Date(req.query.endDate);
-  const start = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
-  const end = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate() + 1);
+  const start = new Date(
+    startDate.getFullYear(),
+    startDate.getMonth(),
+    startDate.getDate()
+  );
+  const end = new Date(
+    endDate.getFullYear(),
+    endDate.getMonth(),
+    endDate.getDate() + 1
+  );
 
-  const currentPage = req.query.page || 1
-  const perPage = 20
+  const currentPage = req.query.page || 1;
+  const perPage = 20;
   try {
     // console.log(date, 'date')
     if (status == "Payment Paid" || status == "Pending") {
       const orders = await Order.find({
         userId: { $in: userId },
         createdAt: { $gte: start, $lt: end },
-        paymentStatus: status
-      }).skip((currentPage - 1) * perPage).limit(perPage);
-      res.status(200).json({ message: 'Orders Fetched', orders: orders })
+        paymentStatus: status,
+      })
+        .skip((currentPage - 1) * perPage)
+        .limit(perPage);
+      res.status(200).json({ message: "Orders Fetched", orders: orders });
     } else {
       const orders = await Order.find({
         userId: { $in: userId },
         createdAt: { $gte: start, $lt: end },
-      }).skip((currentPage - 1) * perPage).limit(perPage);
-      res.status(200).json({ message: 'Orders Fetched', orders: orders })
+      })
+        .skip((currentPage - 1) * perPage)
+        .limit(perPage);
+      res.status(200).json({ message: "Orders Fetched", orders: orders });
     }
-
   } catch (err) {
     res.status(500).json({
       success: false,
       error: err.message,
     });
   }
-})
+});
 
 exports.pendingAmount = asyncHandler(async (req, res, next) => {
+  console.log("hello");
   let userId = req.params.id;
 
   try {
     const orders = await Order.find({
-      userId: { $in: userId },
-      paymentStatus: "Pending "
+      userId: userId,
+      paymentStatus: "Pending",
     });
 
-    const totalSubtotal = orders.reduce((acc, order) => acc + order.subtotal, 0);
-    res.status(200).json({ message: 'Pending Amount', pendingAmount: totalSubtotal })
+    const totalSubtotal = orders.reduce(
+      (acc, order) => acc + order.subtotal,
+      0
+    );
 
+    res
+      .status(200)
+      .json({ message: "Pending Amount", pendingAmount: totalSubtotal });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: err.message,
+      error: error.message,
     });
   }
-})
+});
