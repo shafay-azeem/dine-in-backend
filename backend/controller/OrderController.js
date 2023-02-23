@@ -191,6 +191,24 @@ exports.rangeOrder = asyncHandler(async (req, res, next) => {
       error: err.message,
     });
   }
+})
 
+exports.pendingAmount = asyncHandler(async (req, res, next) => {
+  let userId = req.params.id;
 
+  try {
+    const orders = await Order.find({
+      userId: { $in: userId },
+      paymentStatus: "Pending "
+    });
+
+    const totalSubtotal = orders.reduce((acc, order) => acc + order.subtotal, 0);
+    res.status(200).json({ message: 'Pending Amount', pendingAmount: totalSubtotal })
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: err.message,
+    });
+  }
 })

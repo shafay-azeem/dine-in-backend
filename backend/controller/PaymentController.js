@@ -47,6 +47,72 @@ exports.makePayment = asyncHandler(async (req, res, next) => {
   }
 });
 
+
+//get PaymentListAll
+exports.getAllPayment = asyncHandler(async (req, res, next) => {
+  try {
+    const payments = await Payment.find({ userId: req.params.userId });
+    res.status(200).json({ payments: payments });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
+  }
+})
+
+
+
+//getSingleDatePayment
+exports.getSingleDatePayment = asyncHandler(async (req, res, next) => {
+  let date = req.query.date;
+  const today = new Date(date);
+  today.setHours(0, 0, 0, 0); // Set the time to the beginning of the current day
+  const endOfToday = new Date(today.getTime() + 24 * 60 * 60 * 1000); // Set the time to the end of the current day
+
+  try {
+
+    const payments = await Payment.find({
+      userId: req.params.userId,
+      createdAt: {
+        $gte: today,
+        $lt: endOfToday,
+      },
+    });
+    res.status(200).json({ payments: payments });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
+  }
+})
+
+
+//getSingleDatePayment
+exports.getMultiDatePayment = asyncHandler(async (req, res, next) => {
+  let date = req.query.date;
+
+  const startDate = new Date(req.query.startDate);
+  const endDate = new Date(req.query.endDate);
+  const start = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+  const end = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate() + 1);
+
+  try {
+
+    const payments = await Payment.find({
+      userId: req.params.userId,
+      createdAt: { $gte: start, $lt: end },
+    });
+    res.status(200).json({ payments: payments });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
+  }
+})
+
+
+
+
+
+
+
 //Get Payment Detail By Id --Get
 exports.getPaymentDetail = asyncHandler(async (req, res) => {
 
