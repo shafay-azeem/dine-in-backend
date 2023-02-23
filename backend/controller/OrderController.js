@@ -120,19 +120,31 @@ exports.filterOrder = asyncHandler(async (req, res, next) => {
   let status = req.query.paymentStatus;
   const today = new Date(date);
   today.setUTCHours(0, 0, 0, 0)
-
+  const currentPage = req.query.page || 1
+  const perPage = 20
   try {
     // console.log(date, 'date')
-    const orders = await Order.find({
-      userId: { $in: userId },
-      createdAt: {
-        $gte: today,
-        $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000) // set the end of the day to 24 hours after the beginning of the day
-      },
-      paymentStatus: status
-    });
+    if (status == "Payment Paid" || status == "Pending") {
+      const orders = await Order.find({
+        userId: { $in: userId },
+        createdAt: {
+          $gte: today,
+          $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000) // set the end of the day to 24 hours after the beginning of the day
+        },
+        paymentStatus: status
+      }).skip((currentPage - 1) * perPage).limit(perPage);
+      res.status(200).json({ message: 'Orders Fetched', orders: orders })
+    } else {
+      const orders = await Order.find({
+        userId: { $in: userId },
+        createdAt: {
+          $gte: today,
+          $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000) // set the end of the day to 24 hours after the beginning of the day
+        },
+      }).skip((currentPage - 1) * perPage).limit(perPage);
+      res.status(200).json({ message: 'Orders Fetched', orders: orders })
+    }
 
-    res.status(200).json({ message: 'Orders Fetched', orders: orders })
   } catch (err) {
     res.status(500).json({
       success: false,
