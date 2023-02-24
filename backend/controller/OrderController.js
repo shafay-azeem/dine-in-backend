@@ -81,7 +81,7 @@ exports.getPaidUnpaidOrders = asyncHandler(async (req, res, next) => {
   let userId = req.params.id;
   let status = req.query.paymentStatus;
   const currentPage = req.query.page || 1;
-  const perPage = 20;
+  const perPage = 1000;
   try {
     if (status === "Payment Paid") {
       let totalOrders = await Order.find({
@@ -143,7 +143,7 @@ exports.filterOrder = asyncHandler(async (req, res, next) => {
   const today = new Date(date);
   today.setUTCHours(0, 0, 0, 0);
   const currentPage = req.query.page || 1;
-  const perPage = 20;
+  const perPage = 1000;
   try {
     // console.log(date, 'date')
     if (status == "Payment Paid" || status == "Pending") {
@@ -196,7 +196,7 @@ exports.rangeOrder = asyncHandler(async (req, res, next) => {
   );
 
   const currentPage = req.query.page || 1;
-  const perPage = 20;
+  const perPage = 1000;
   try {
     // console.log(date, 'date')
     if (status == "Payment Paid" || status == "Pending") {
