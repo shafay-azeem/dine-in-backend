@@ -84,6 +84,7 @@ exports.getAllCarts = asyncHandler(async (req, res, next) => {
 
 //get Cart By Table NUmber
 exports.getCartByTableNumber = asyncHandler(async (req, res, next) => {
+  console.log(req.params.tableNumber, 'tableNumber')
   try {
     const cart = await Cart.findOne({ tableNumber: req.params.tableNumber });
     res.status(200).json({

@@ -29,7 +29,7 @@ const cartSchema = new mongoose.Schema({
     type: Number,
   },
   tableNumber: {
-    type: Number,
+    type: String,
   },
 });
 

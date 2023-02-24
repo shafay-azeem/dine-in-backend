@@ -10,7 +10,7 @@ const OrderSchema = new mongoose.Schema(
       type: String,
     },
     tableNumber: {
-      type: Number,
+      type: String,
     },
     orderedItems: [
       {
