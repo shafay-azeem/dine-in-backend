@@ -4,11 +4,11 @@ const Cart = require("../models/CartModel");
 //Add To Cart ---Post
 exports.addToCart = asyncHandler(async (req, res, next) => {
   try {
-    const { item_Id, item_Name, item_Price, item_Img } = req.body;
+    const { item_Id, item_Name, item_Price, item_Img, item_Size } = req.body;
     let { item_Qty } = req.body;
     item_Qty = parseInt(item_Qty);
     const tableNumber = parseInt(req.params.tableNumber);
-
+    console.log(item_Size, 'item_Size')
     const cart = await Cart.findOne({ tableNumber });
     if (!cart) {
       const itemPrice_Total = item_Qty * item_Price;
@@ -19,6 +19,7 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
         item_Qty,
         itemPrice_Total,
         item_Img,
+        item_Size
       };
       const newCart = new Cart({
         cartItems: [cartItem],
@@ -30,7 +31,7 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
     } else {
       let itemExists = false;
       for (let i = 0; i < cart.cartItems.length; i++) {
-        if (cart.cartItems[i].item_Id.toString() === item_Id) {
+        if (cart.cartItems[i].item_Id.toString() === item_Id && cart.cartItems[i].item_Size === item_Size) {
           cart.cartItems[i].item_Qty += item_Qty;
           cart.cartItems[i].itemPrice_Total =
             cart.cartItems[i].item_Qty * cart.cartItems[i].item_Price;
@@ -48,6 +49,7 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
           item_Qty,
           itemPrice_Total,
           item_Img,
+          item_Size
         };
         cart.cartItems.push(cartItem);
       }
@@ -166,8 +168,9 @@ exports.cartIncrementDecrement = async (req, res, next) => {
   const cartDocId = req.params.cartDocId;
   const cartId = req.query.cartId;
   const cartStatus = req.query.cartStatus || "decrement";
+  const itemSize = req.query.itemSize
   let cart = await Cart.findById(cartId);
-  const cartItem = cart.cartItems.find((item) => item._id == cartDocId);
+  const cartItem = cart.cartItems.find((item) => item._id == cartDocId && item.item_Size === itemSize);
   if (!cartItem) {
     return res.status(404).json({
       message: "Cart item not found",

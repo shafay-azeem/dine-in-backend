@@ -30,9 +30,14 @@ const OrderSchema = new mongoose.Schema(
         item_Img: {
           type: String,
         },
+
         itemPrice_Total: {
           type: Number,
         },
+        item_Size: {
+          type: String,
+        }
+
       },
     ],
 

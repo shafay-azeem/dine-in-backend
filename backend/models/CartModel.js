@@ -20,6 +20,9 @@ const cartItemSchema = new mongoose.Schema({
   item_Img: {
     type: String,
   },
+  item_Size: {
+    type: String,
+  },
 });
 
 // Define the Cart schema
