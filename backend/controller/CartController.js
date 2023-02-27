@@ -184,8 +184,11 @@ exports.deleteModifierById = asyncHandler(async (req, res, next) => {
       });
     }
 
-    let cartItem = await cart.cartItems.filter((cartItem) => cartItem._id == cartDocId)
-    await cartItem[0].Modifier.pull({ _id: modifierId });
+
+    const cartItem = cart.cartItems.find(
+      (item) => item._id == cartDocId
+    );
+    await cartItem.Modifier.pull({ _id: modifierId });
 
     cart.total_Price = cart.cartItems.reduce(
       (acc, cur) => acc + cur.itemPrice_Total,
