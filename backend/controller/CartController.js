@@ -168,6 +168,43 @@ exports.modifierIncrementDecrement = async (req, res, next) => {
   });
 };
 
+//------------------------------------
+//Delete modifierId By Cart Id
+exports.deleteModifierById = asyncHandler(async (req, res, next) => {
+  const cartDocId = req.params.cartDocId;
+  const cartId = req.query.cartId;
+  const modifierId = req.query.modifierId
+
+  try {
+    let cart = await Cart.findById(cartId);
+    if (!cart) {
+      return res.status(404).json({
+        success: false,
+        message: "Cart not found with this Id",
+      });
+    }
+
+    let cartItem = await cart.cartItems((cartItem) => cartItem._id == cartDocId)
+    await cartItem.Modifier.pull({ _id: modifierId });
+
+    cart.total_Price = cart.cartItems.reduce(
+      (acc, cur) => acc + cur.itemPrice_Total,
+      0
+    );
+
+    await cart.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Cart Item deleted successfully",
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+});
 
 
 

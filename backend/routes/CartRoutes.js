@@ -8,6 +8,7 @@ const {
   deleteCartItem,
   addModifiertoCartItem,
   modifierIncrementDecrement,
+  deleteModifierById,
 } = require("../controller/CartController");
 
 const router = express.Router();
@@ -23,5 +24,6 @@ router.route("/deleteCartItem/:cartDocId").delete(deleteCartItem);
 
 router.route("/addModifiertoCartItem/:tableNumber").post(addModifiertoCartItem);
 router.route("/modifierIncrementDecrement/:cartDocId").get(modifierIncrementDecrement);
+router.route("/deleteModifierById/:cartDocId").get(deleteModifierById);
 
 module.exports = router;
