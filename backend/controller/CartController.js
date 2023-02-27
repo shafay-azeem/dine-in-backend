@@ -71,6 +71,106 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
   }
 });
 
+
+
+
+//--------------------------------------------------
+
+exports.addModifiertoCartItem = asyncHandler(async (req, res, next) => {
+  const tableNumber = parseInt(req.params.tableNumber);
+  const itemId = req.query.itemId;
+  const item_Size = req.query.item_Size
+  const cart = await Cart.findOne({ tableNumber });
+  if (!cart) {
+    res.status(404).json({ message: "First Add Cart then add modifier" });
+  }
+
+  const cartItem = cart.cartItems.find((item) => item.item_Id.toString() === itemId.toString() && item.item_Size === item_Size);
+
+  let isModifierNameMatched = false;
+  for (const modifier of cartItem.Modifier) {
+    if (modifier.Modifier_Name === req.body.Modifier_Name) {
+      isModifierNameMatched = true;
+      break;
+    }
+  }
+  if (isModifierNameMatched) {
+    for (let i = 0; i < cartItem.Modifier.length; i++) {
+      if (cartItem.Modifier[i].Modifier_Name === req.body.Modifier_Name) {
+        cartItem.Modifier[i].Modifier_Qty += req.body.Modifier_Qty;
+        cartItem.itemPrice_Total = cartItem.item_Qty * cartItem.item_Price;
+        cartItem.Modifier.forEach((modifier) => {
+          cartItem.itemPrice_Total += modifier.Modifier_Price * modifier.Modifier_Qty;
+        });
+        break;
+      }
+    }
+  } else {
+    console.log('inside else')
+    cartItem.Modifier.push(req.body);
+    cartItem.itemPrice_Total = cartItem.item_Price * cartItem.item_Qty;
+    cartItem.Modifier.forEach((modifier) => {
+      cartItem.itemPrice_Total += modifier.Modifier_Price * modifier.Modifier_Qty;
+    });
+  }
+  cart.total_Price = cart.cartItems.reduce(
+    (acc, cur) => acc + cur.itemPrice_Total,
+    0
+  );
+  await cart.save();
+
+  res.status(200).json({ cartItem: cartItem });
+});
+
+
+//--------------------
+
+exports.modifierIncrementDecrement = async (req, res, next) => {
+  const cartDocId = req.params.cartDocId;
+  const cartId = req.query.cartId;
+  const modifierId = req.query.modifierId
+  const cartStatus = req.query.cartStatus || "decrement";
+  const itemSize = req.query.itemSize;
+  let cart = await Cart.findById(cartId);
+
+
+  const cartItem = cart.cartItems.find(
+    (item) => item._id == cartDocId && item.item_Size === itemSize
+  );
+  if (!cartItem) {
+    return res.status(404).json({
+      message: "Cart item not found",
+    });
+  }
+
+  const ModifierItem = cartItem.Modifier.find(
+    (modifier) => modifier._id == modifierId)
+
+  let Modifier_Qty = ModifierItem.Modifier_Qty;
+  let itemTotalPrice = cartItem.item_Price * cartItem.item_Qty
+  if (cartStatus == "increment") {
+    Modifier_Qty += 1;
+  } else {
+    Modifier_Qty -= 1;
+  }
+  ModifierItem.Modifier_Qty = Modifier_Qty
+  cartItem.Modifier.forEach((modifier) => {
+    itemTotalPrice += modifier.Modifier_Price * modifier.Modifier_Qty;
+  });
+  cartItem.itemPrice_Total = itemTotalPrice;
+  cart.total_Price = cart.cartItems.reduce(
+    (acc, cur) => acc + cur.itemPrice_Total,
+    0
+  );
+  cart = await cart.save();
+  res.json({
+    message: "Cart item updated successfully",
+  });
+};
+
+
+
+
 //Get All Carts ---Get
 exports.getAllCarts = asyncHandler(async (req, res, next) => {
   try {

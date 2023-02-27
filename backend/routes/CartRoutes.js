@@ -6,6 +6,8 @@ const {
   getCartByTableNumber,
   cartIncrementDecrement,
   deleteCartItem,
+  addModifiertoCartItem,
+  modifierIncrementDecrement,
 } = require("../controller/CartController");
 
 const router = express.Router();
@@ -17,5 +19,9 @@ router.route("/getCartByTableNumber/:tableNumber").get(getCartByTableNumber);
 router.route("/deleteCartById/:id").delete(deleteCart);
 router.route("/cartIncrementDecrement/:cartDocId").get(cartIncrementDecrement);
 router.route("/deleteCartItem/:cartDocId").delete(deleteCartItem);
+
+
+router.route("/addModifiertoCartItem/:tableNumber").post(addModifiertoCartItem);
+router.route("/modifierIncrementDecrement/:cartDocId").get(modifierIncrementDecrement);
 
 module.exports = router;
