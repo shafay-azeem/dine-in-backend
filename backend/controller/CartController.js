@@ -8,6 +8,7 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
     let { item_Qty } = req.body;
     item_Qty = parseInt(item_Qty);
     let modifier_size = req.query.modifier_size
+    let modifierQuery = req.query.modifierQuery
     const tableNumber = parseInt(req.params.tableNumber);
     console.log(item_Size, 'item_Size')
     const cart = await Cart.findOne({ tableNumber });
@@ -33,11 +34,21 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
     } else {
       let itemExists = false;
       for (let i = 0; i < cart.cartItems.length; i++) {
-        if (cart.cartItems[i].item_Id.toString() === item_Id && cart.cartItems[i].item_Size === item_Size) {
+        if (cart.cartItems[i].item_Id.toString() === item_Id && cart.cartItems[i].item_Size === item_Size && modifierQuery) {
           cart.cartItems[i].item_Qty += item_Qty;
           cart.cartItems[i].itemPrice_Total =
             cart.cartItems[i].item_Qty * cart.cartItems[i].item_Price;
           cart.cartItems[i].itemPrice_Total = calculateTotalPrice(cart.cartItems[i]);
+          // if (Modifier && Modifier.length > 0) {
+          //   if (cart.cartItems[i].item_Size === modifier_size) {
+          //     cart.cartItems[i].Modifier = Modifier;
+          //     cart.cartItems[i].itemPrice_Total = calculateTotalPrice(cart.cartItems[i]);
+          //   }
+          // }
+          itemExists = true;
+          break;
+        }
+        if (cart.cartItems[i].item_Id.toString() === item_Id && cart.cartItems[i].item_Size === item_Size && modifierQuery) {
           if (Modifier && Modifier.length > 0) {
             if (cart.cartItems[i].item_Size === modifier_size) {
               cart.cartItems[i].Modifier = Modifier;
