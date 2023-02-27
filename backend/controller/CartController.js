@@ -4,9 +4,10 @@ const Cart = require("../models/CartModel");
 //Add To Cart ---Post
 exports.addToCart = asyncHandler(async (req, res, next) => {
   try {
-    const { item_Id, item_Name, item_Price, item_Img, item_Size } = req.body;
+    const { item_Id, item_Name, item_Price, item_Img, item_Size, Modifier } = req.body;
     let { item_Qty } = req.body;
     item_Qty = parseInt(item_Qty);
+    let modifier_size = req.query.modifier_size
     const tableNumber = parseInt(req.params.tableNumber);
     console.log(item_Size, 'item_Size')
     const cart = await Cart.findOne({ tableNumber });
@@ -19,7 +20,8 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
         item_Qty,
         itemPrice_Total,
         item_Img,
-        item_Size
+        item_Size,
+        Modifier
       };
       const newCart = new Cart({
         cartItems: [cartItem],
@@ -35,13 +37,20 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
           cart.cartItems[i].item_Qty += item_Qty;
           cart.cartItems[i].itemPrice_Total =
             cart.cartItems[i].item_Qty * cart.cartItems[i].item_Price;
+          cart.cartItems[i].itemPrice_Total = calculateTotalPrice(cart.cartItems[i]);
+          if (Modifier && Modifier.length > 0) {
+            if (cart.cartItems[i].item_Size === modifier_size) {
+              cart.cartItems[i].Modifier = Modifier;
+              cart.cartItems[i].itemPrice_Total = calculateTotalPrice(cart.cartItems[i]);
+            }
+          }
           itemExists = true;
           break;
         }
       }
 
       if (!itemExists) {
-        const itemPrice_Total = item_Qty * item_Price;
+        const itemPrice_Total = calculateTotalPrice({ item_Price, item_Qty, Modifier });
         const cartItem = {
           item_Id,
           item_Name,
@@ -49,7 +58,8 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
           item_Qty,
           itemPrice_Total,
           item_Img,
-          item_Size
+          item_Size,
+          Modifier
         };
         cart.cartItems.push(cartItem);
       }
@@ -68,6 +78,22 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+function calculateTotalPrice(cartItem) {
+  let total = cartItem.item_Price * cartItem.item_Qty;
+  if (cartItem.Modifier && cartItem.Modifier.length > 0) {
+    cartItem.Modifier.forEach(modifier => {
+      total += modifier.Modifier_Price * modifier.Modifier_Qty;
+    });
+  }
+  return total;
+}
+
+
+
+
+
+
 //Get All Carts ---Get
 exports.getAllCarts = asyncHandler(async (req, res, next) => {
   try {

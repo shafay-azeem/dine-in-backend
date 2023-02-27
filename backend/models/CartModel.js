@@ -23,6 +23,17 @@ const cartItemSchema = new mongoose.Schema({
   item_Size: {
     type: String,
   },
+  Modifier: [{
+    Modifier_Name: {
+      type: String,
+    },
+    Modifier_Price: {
+      type: Number,
+    },
+    Modifier_Qty: {
+      type: Number,
+    }
+  }]
 });
 
 // Define the Cart schema
