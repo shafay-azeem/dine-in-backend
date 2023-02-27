@@ -50,8 +50,11 @@ exports.makePayment = asyncHandler(async (req, res, next) => {
 
 //get PaymentListAll
 exports.getAllPayment = asyncHandler(async (req, res, next) => {
+  const currentPage = req.query.page || 1;
+  const perPage = 10;
   try {
-    const payments = await Payment.find({ userId: req.params.id });
+    const payments = await Payment.find({ userId: req.params.id }).sort({ createdAt: -1 }).skip((currentPage - 1) * perPage)
+      .limit(perPage);
     res.status(200).json({ payments: payments });
   } catch (error) {
     console.error(error);
@@ -61,6 +64,8 @@ exports.getAllPayment = asyncHandler(async (req, res, next) => {
 
 //getSingleDatePayment
 exports.getSingleDatePayment = asyncHandler(async (req, res, next) => {
+  const currentPage = req.query.page || 1;
+  const perPage = 10;
   let date = req.query.date;
   const today = new Date(date);
   today.setHours(0, 0, 0, 0); // Set the time to the beginning of the current day
@@ -73,7 +78,8 @@ exports.getSingleDatePayment = asyncHandler(async (req, res, next) => {
         $gte: today,
         $lt: endOfToday,
       },
-    });
+    }).sort({ createdAt: -1 }).skip((currentPage - 1) * perPage)
+      .limit(perPage);
     res.status(200).json({ payments: payments });
   } catch (error) {
     console.error(error);
@@ -81,8 +87,10 @@ exports.getSingleDatePayment = asyncHandler(async (req, res, next) => {
   }
 });
 
-//getSingleDatePayment
+//get Multi date 
 exports.getMultiDatePayment = asyncHandler(async (req, res, next) => {
+  const currentPage = req.query.page || 1;
+  const perPage = 10;
   const startDate = new Date(req.query.startDate);
   const endDate = new Date(req.query.endDate);
   const start = new Date(
@@ -100,7 +108,8 @@ exports.getMultiDatePayment = asyncHandler(async (req, res, next) => {
     const payments = await Payment.find({
       userId: req.params.id,
       createdAt: { $gte: start, $lt: end },
-    });
+    }).sort({ createdAt: -1 }).skip((currentPage - 1) * perPage)
+      .limit(perPage);
     res.status(200).json({ payments: payments });
   } catch (error) {
     console.error(error);
