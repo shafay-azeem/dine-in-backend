@@ -1,16 +1,13 @@
 const asyncHandler = require("express-async-handler");
 const Cart = require("../models/CartModel");
 
-//Add To Cart ---Post
 exports.addToCart = asyncHandler(async (req, res, next) => {
   try {
-    const { item_Id, item_Name, item_Price, item_Img, item_Size, Modifier } = req.body;
+    const { item_Id, item_Name, item_Price, item_Img, item_Size } = req.body;
     let { item_Qty } = req.body;
     item_Qty = parseInt(item_Qty);
-    let modifier_size = req.query.modifier_size
-    let modifierQuery = req.query.modifierQuery
     const tableNumber = parseInt(req.params.tableNumber);
-    console.log(item_Size, 'item_Size')
+
     const cart = await Cart.findOne({ tableNumber });
     if (!cart) {
       const itemPrice_Total = item_Qty * item_Price;
@@ -22,7 +19,6 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
         itemPrice_Total,
         item_Img,
         item_Size,
-        Modifier
       };
       const newCart = new Cart({
         cartItems: [cartItem],
@@ -34,34 +30,20 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
     } else {
       let itemExists = false;
       for (let i = 0; i < cart.cartItems.length; i++) {
-        if (cart.cartItems[i].item_Id.toString() === item_Id && cart.cartItems[i].item_Size === item_Size && modifierQuery) {
+        if (
+          cart.cartItems[i].item_Id.toString() === item_Id &&
+          cart.cartItems[i].item_Size === item_Size
+        ) {
           cart.cartItems[i].item_Qty += item_Qty;
           cart.cartItems[i].itemPrice_Total =
             cart.cartItems[i].item_Qty * cart.cartItems[i].item_Price;
-          cart.cartItems[i].itemPrice_Total = calculateTotalPrice(cart.cartItems[i]);
-          // if (Modifier && Modifier.length > 0) {
-          //   if (cart.cartItems[i].item_Size === modifier_size) {
-          //     cart.cartItems[i].Modifier = Modifier;
-          //     cart.cartItems[i].itemPrice_Total = calculateTotalPrice(cart.cartItems[i]);
-          //   }
-          // }
-          itemExists = true;
-          break;
-        }
-        if (cart.cartItems[i].item_Id.toString() === item_Id && cart.cartItems[i].item_Size === item_Size && modifierQuery) {
-          if (Modifier && Modifier.length > 0) {
-            if (cart.cartItems[i].item_Size === modifier_size) {
-              cart.cartItems[i].Modifier = Modifier;
-              cart.cartItems[i].itemPrice_Total = calculateTotalPrice(cart.cartItems[i]);
-            }
-          }
           itemExists = true;
           break;
         }
       }
 
       if (!itemExists) {
-        const itemPrice_Total = calculateTotalPrice({ item_Price, item_Qty, Modifier });
+        const itemPrice_Total = item_Qty * item_Price;
         const cartItem = {
           item_Id,
           item_Name,
@@ -70,7 +52,6 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
           itemPrice_Total,
           item_Img,
           item_Size,
-          Modifier
         };
         cart.cartItems.push(cartItem);
       }
@@ -90,21 +71,6 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
   }
 });
 
-function calculateTotalPrice(cartItem) {
-  let total = cartItem.item_Price * cartItem.item_Qty;
-  if (cartItem.Modifier && cartItem.Modifier.length > 0) {
-    cartItem.Modifier.forEach(modifier => {
-      total += modifier.Modifier_Price * modifier.Modifier_Qty;
-    });
-  }
-  return total;
-}
-
-
-
-
-
-
 //Get All Carts ---Get
 exports.getAllCarts = asyncHandler(async (req, res, next) => {
   try {
@@ -123,7 +89,6 @@ exports.getAllCarts = asyncHandler(async (req, res, next) => {
 
 //get Cart By Table NUmber
 exports.getCartByTableNumber = asyncHandler(async (req, res, next) => {
-  console.log(req.params.tableNumber, 'tableNumber')
   try {
     const cart = await Cart.findOne({ tableNumber: req.params.tableNumber });
     res.status(200).json({
@@ -166,7 +131,6 @@ exports.deleteCart = asyncHandler(async (req, res, next) => {
 
 //Delete Cart Item
 
-
 //Delete Cart By Cart Id
 exports.deleteCartItem = asyncHandler(async (req, res, next) => {
   const cartDocId = req.params.cartDocId;
@@ -186,7 +150,7 @@ exports.deleteCartItem = asyncHandler(async (req, res, next) => {
       0
     );
 
-    await cart.save()
+    await cart.save();
 
     res.status(200).json({
       success: true,
@@ -200,14 +164,15 @@ exports.deleteCartItem = asyncHandler(async (req, res, next) => {
   }
 });
 
-
 exports.cartIncrementDecrement = async (req, res, next) => {
   const cartDocId = req.params.cartDocId;
   const cartId = req.query.cartId;
   const cartStatus = req.query.cartStatus || "decrement";
-  const itemSize = req.query.itemSize
+  const itemSize = req.query.itemSize;
   let cart = await Cart.findById(cartId);
-  const cartItem = cart.cartItems.find((item) => item._id == cartDocId && item.item_Size === itemSize);
+  const cartItem = cart.cartItems.find(
+    (item) => item._id == cartDocId && item.item_Size === itemSize
+  );
   if (!cartItem) {
     return res.status(404).json({
       message: "Cart item not found",
