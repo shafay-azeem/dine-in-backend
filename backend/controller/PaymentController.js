@@ -53,9 +53,10 @@ exports.getAllPayment = asyncHandler(async (req, res, next) => {
   const currentPage = req.query.page || 1;
   const perPage = 10;
   try {
+    const totalPaymentCount = await Payment.find({ userId: req.params.id }).countDocuments()
     const payments = await Payment.find({ userId: req.params.id }).sort({ createdAt: -1 }).skip((currentPage - 1) * perPage)
       .limit(perPage);
-    res.status(200).json({ payments: payments });
+    res.status(200).json({ payments: payments, totalPaymentCount: totalPaymentCount });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Server error" });
@@ -72,6 +73,13 @@ exports.getSingleDatePayment = asyncHandler(async (req, res, next) => {
   const endOfToday = new Date(today.getTime() + 24 * 60 * 60 * 1000); // Set the time to the end of the current day
 
   try {
+    const totalPaymentCount = await Payment.findPayment.find({
+      userId: req.params.id,
+      createdAt: {
+        $gte: today,
+        $lt: endOfToday,
+      },
+    }).countDocuments()
     const payments = await Payment.find({
       userId: req.params.id,
       createdAt: {
@@ -80,7 +88,7 @@ exports.getSingleDatePayment = asyncHandler(async (req, res, next) => {
       },
     }).sort({ createdAt: -1 }).skip((currentPage - 1) * perPage)
       .limit(perPage);
-    res.status(200).json({ payments: payments });
+    res.status(200).json({ payments: payments, totalPaymentCount: totalPaymentCount });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Server error" });
@@ -105,12 +113,16 @@ exports.getMultiDatePayment = asyncHandler(async (req, res, next) => {
   );
 
   try {
+    const totalPaymentCount = await Payment.find({
+      userId: req.params.id,
+      createdAt: { $gte: start, $lt: end },
+    }).countDocuments()
     const payments = await Payment.find({
       userId: req.params.id,
       createdAt: { $gte: start, $lt: end },
     }).sort({ createdAt: -1 }).skip((currentPage - 1) * perPage)
       .limit(perPage);
-    res.status(200).json({ payments: payments });
+    res.status(200).json({ payments: payments, totalPaymentCount: totalPaymentCount });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Server error" });
