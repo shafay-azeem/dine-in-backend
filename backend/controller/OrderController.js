@@ -81,7 +81,7 @@ exports.getPaidUnpaidOrders = asyncHandler(async (req, res, next) => {
   let userId = req.params.id;
   let status = req.query.paymentStatus;
   const currentPage = req.query.page || 1;
-  const perPage = 1000;
+  const perPage = 10;
   try {
     if (status === "Payment Paid") {
       let totalOrders = await Order.find({
@@ -91,7 +91,7 @@ exports.getPaidUnpaidOrders = asyncHandler(async (req, res, next) => {
       const orders = await Order.find({
         userId: { $in: userId },
         paymentStatus: status,
-      })
+      }).sort({ createdAt: -1 })
         .skip((currentPage - 1) * perPage)
         .limit(perPage);
       res.status(200).json({
@@ -107,7 +107,7 @@ exports.getPaidUnpaidOrders = asyncHandler(async (req, res, next) => {
       const orders = await Order.find({
         userId: { $in: userId },
         paymentStatus: status,
-      })
+      }).sort({ createdAt: -1 })
         .skip((currentPage - 1) * perPage)
         .limit(perPage);
       res.status(200).json({
@@ -119,7 +119,7 @@ exports.getPaidUnpaidOrders = asyncHandler(async (req, res, next) => {
       let totalOrders = await Order.find({
         userId: { $in: userId },
       }).countDocuments();
-      const orders = await Order.find({ userId: { $in: userId } })
+      const orders = await Order.find({ userId: { $in: userId } }).sort({ createdAt: -1 })
         .skip((currentPage - 1) * perPage)
         .limit(perPage);
       res.status(200).json({
@@ -143,7 +143,7 @@ exports.filterOrder = asyncHandler(async (req, res, next) => {
   const today = new Date(date);
   today.setUTCHours(0, 0, 0, 0);
   const currentPage = req.query.page || 1;
-  const perPage = 1000;
+  const perPage = 10;
   try {
     // console.log(date, 'date')
     if (status == "Payment Paid" || status == "Pending") {
@@ -154,7 +154,7 @@ exports.filterOrder = asyncHandler(async (req, res, next) => {
           $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000), // set the end of the day to 24 hours after the beginning of the day
         },
         paymentStatus: status,
-      })
+      }).sort({ createdAt: -1 })
         .skip((currentPage - 1) * perPage)
         .limit(perPage);
       res.status(200).json({ message: "Orders Fetched", orders: orders });
@@ -165,7 +165,7 @@ exports.filterOrder = asyncHandler(async (req, res, next) => {
           $gte: today,
           $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000), // set the end of the day to 24 hours after the beginning of the day
         },
-      })
+      }).sort({ createdAt: -1 })
         .skip((currentPage - 1) * perPage)
         .limit(perPage);
       res.status(200).json({ message: "Orders Fetched", orders: orders });
@@ -196,7 +196,7 @@ exports.rangeOrder = asyncHandler(async (req, res, next) => {
   );
 
   const currentPage = req.query.page || 1;
-  const perPage = 1000;
+  const perPage = 10;
   try {
     // console.log(date, 'date')
     if (status == "Payment Paid" || status == "Pending") {
@@ -204,7 +204,7 @@ exports.rangeOrder = asyncHandler(async (req, res, next) => {
         userId: { $in: userId },
         createdAt: { $gte: start, $lt: end },
         paymentStatus: status,
-      })
+      }).sort({ createdAt: -1 })
         .skip((currentPage - 1) * perPage)
         .limit(perPage);
       res.status(200).json({ message: "Orders Fetched", orders: orders });
@@ -212,7 +212,7 @@ exports.rangeOrder = asyncHandler(async (req, res, next) => {
       const orders = await Order.find({
         userId: { $in: userId },
         createdAt: { $gte: start, $lt: end },
-      })
+      }).sort({ createdAt: -1 })
         .skip((currentPage - 1) * perPage)
         .limit(perPage);
       res.status(200).json({ message: "Orders Fetched", orders: orders });
