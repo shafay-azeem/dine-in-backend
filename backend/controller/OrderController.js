@@ -147,6 +147,10 @@ exports.filterOrder = asyncHandler(async (req, res, next) => {
   try {
     // console.log(date, 'date')
     if (status == "Payment Paid" || status == "Pending") {
+      let totalOrders = await Order.find({
+        userId: { $in: userId },
+        paymentStatus: status,
+      }).countDocuments();
       const orders = await Order.find({
         userId: { $in: userId },
         createdAt: {
@@ -157,8 +161,12 @@ exports.filterOrder = asyncHandler(async (req, res, next) => {
       }).sort({ createdAt: -1 })
         .skip((currentPage - 1) * perPage)
         .limit(perPage);
-      res.status(200).json({ message: "Orders Fetched", orders: orders });
+      res.status(200).json({ message: "Orders Fetched", orders: orders, totalOrders: totalOrders });
     } else {
+      let totalOrders = await Order.find({
+        userId: { $in: userId },
+        paymentStatus: status,
+      }).countDocuments();
       const orders = await Order.find({
         userId: { $in: userId },
         createdAt: {
@@ -168,7 +176,7 @@ exports.filterOrder = asyncHandler(async (req, res, next) => {
       }).sort({ createdAt: -1 })
         .skip((currentPage - 1) * perPage)
         .limit(perPage);
-      res.status(200).json({ message: "Orders Fetched", orders: orders });
+      res.status(200).json({ message: "Orders Fetched", orders: orders, totalOrders: totalOrders });
     }
   } catch (err) {
     res.status(500).json({
@@ -200,6 +208,12 @@ exports.rangeOrder = asyncHandler(async (req, res, next) => {
   try {
     // console.log(date, 'date')
     if (status == "Payment Paid" || status == "Pending") {
+
+      let totalOrders = await Order.find({
+        userId: { $in: userId },
+        paymentStatus: status,
+      }).countDocuments();
+
       const orders = await Order.find({
         userId: { $in: userId },
         createdAt: { $gte: start, $lt: end },
@@ -207,15 +221,20 @@ exports.rangeOrder = asyncHandler(async (req, res, next) => {
       }).sort({ createdAt: -1 })
         .skip((currentPage - 1) * perPage)
         .limit(perPage);
-      res.status(200).json({ message: "Orders Fetched", orders: orders });
+      res.status(200).json({ message: "Orders Fetched", orders: orders, totalOrders: totalOrders });
     } else {
+
+      let totalOrders = await Order.find({
+        userId: { $in: userId },
+        paymentStatus: status,
+      }).countDocuments();
       const orders = await Order.find({
         userId: { $in: userId },
         createdAt: { $gte: start, $lt: end },
       }).sort({ createdAt: -1 })
         .skip((currentPage - 1) * perPage)
         .limit(perPage);
-      res.status(200).json({ message: "Orders Fetched", orders: orders });
+      res.status(200).json({ message: "Orders Fetched", orders: orders, totalOrders: totalOrders });
     }
   } catch (err) {
     res.status(500).json({
