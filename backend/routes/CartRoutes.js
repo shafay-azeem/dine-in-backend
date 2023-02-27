@@ -24,6 +24,6 @@ router.route("/deleteCartItem/:cartDocId").delete(deleteCartItem);
 
 router.route("/addModifiertoCartItem/:tableNumber").post(addModifiertoCartItem);
 router.route("/modifierIncrementDecrement/:cartDocId").get(modifierIncrementDecrement);
-router.route("/deleteModifierById/:cartDocId").get(deleteModifierById);
+router.route("/deleteModifierById/:cartDocId").delete(deleteModifierById);
 
 module.exports = router;
