@@ -318,12 +318,18 @@ exports.cartIncrementDecrement = async (req, res, next) => {
   let itemQty = cartItem.item_Qty;
   let itemPrice = cartItem.item_Price;
   let itemTotalPrice = itemQty * itemPrice;
+  cartItem.Modifier.forEach((modifier) => {
+    itemTotalPrice += modifier.Modifier_Price * modifier.Modifier_Qty;
+  });
   if (cartStatus == "increment") {
     itemQty += 1;
   } else {
     itemQty -= 1;
   }
   itemTotalPrice = itemQty * itemPrice;
+  cartItem.Modifier.forEach((modifier) => {
+    itemTotalPrice += modifier.Modifier_Price * modifier.Modifier_Qty;
+  });
   cartItem.item_Qty = itemQty;
   cartItem.itemPrice_Total = itemTotalPrice;
   cart.total_Price = cart.cartItems.reduce(
