@@ -73,7 +73,7 @@ exports.getSingleDatePayment = asyncHandler(async (req, res, next) => {
   const endOfToday = new Date(today.getTime() + 24 * 60 * 60 * 1000); // Set the time to the end of the current day
 
   try {
-    const totalPaymentCount = await Payment.findPayment.find({
+    const totalPaymentCount = await Payment.find({
       userId: req.params.id,
       createdAt: {
         $gte: today,
