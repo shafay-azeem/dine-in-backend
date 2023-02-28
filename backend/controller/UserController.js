@@ -328,3 +328,21 @@ exports.logout = asyncHandler(async (req, res, next) => {
     }
   );
 });
+
+
+
+exports.getuserDetailById = asyncHandler(async (req, res, next) => {
+  const userId = req.params.userId
+
+  const user = await User.findById(new mongoose.Types.ObjectId(userId))
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: "User Not Found",
+    });
+  }
+  res.status(200).json({
+    success: true,
+    user: user
+  });
+})

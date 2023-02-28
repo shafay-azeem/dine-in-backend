@@ -10,6 +10,7 @@ const {
   resetPassword,
   userDetail,
   logout,
+  getuserDetailById,
 } = require("../controller/UserController");
 const { isAuthenticatedUser } = require("../middleware/auth");
 const router = express.Router();
@@ -25,5 +26,7 @@ router.route("/updateProfile").put(isAuthenticatedUser, updateProfile);
 router.route("/deleteUser/:id").delete(isAuthenticatedUser, deleteUser);
 router.route("/deleteAllUsers").delete(deleteAllUsers);
 router.route("/logout").post(isAuthenticatedUser, logout);
+
+router.route("/getuserDetailById/:userId").get(getuserDetailById);
 
 module.exports = router;
