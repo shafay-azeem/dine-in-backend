@@ -355,15 +355,17 @@ exports.getCartLength = async (req, res, next) => {
   let zero = 0
   try {
     const cart = await Cart.findOne({ tableNumber: req.params.tableNumber }).countDocuments();
+
     if (!cart) {
       return res.status(200).json({
-        success: true,
-        zero
+        success: false,
+        message: 'cart doesnot Exist'
       });
     }
+    const itemCount = cart.cartItems.countDocuments()
     res.status(200).json({
       success: true,
-      cart,
+      itemCount,
     });
   } catch (err) {
     res.status(500).json({
