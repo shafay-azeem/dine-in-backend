@@ -175,7 +175,6 @@ exports.filterOrder = asyncHandler(async (req, res, next) => {
           $gte: today,
           $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000), // set the end of the day to 24 hours after the beginning of the day
         },
-        paymentStatus: status,
       }).countDocuments();
       const orders = await Order.find({
         userId: { $in: userId },
@@ -215,6 +214,8 @@ exports.rangeOrder = asyncHandler(async (req, res, next) => {
 
   const currentPage = req.query.page || 1;
   const perPage = 10;
+
+
   try {
     // console.log(date, 'date')
     if (status == "Payment Paid" || status == "Pending") {
@@ -237,8 +238,7 @@ exports.rangeOrder = asyncHandler(async (req, res, next) => {
 
       let totalOrders = await Order.find({
         userId: { $in: userId },
-        createdAt: { $gte: start, $lt: end },
-        paymentStatus: status,
+        createdAt: { $gte: start, $lt: end }
       }).countDocuments();
       const orders = await Order.find({
         userId: { $in: userId },
