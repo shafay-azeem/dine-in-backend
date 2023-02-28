@@ -140,6 +140,8 @@ exports.filterOrder = asyncHandler(async (req, res, next) => {
   let userId = req.params.id;
   let date = req.query.date;
   let status = req.query.paymentStatus;
+
+  console.log(status, 'status')
   const today = new Date(date);
   today.setUTCHours(0, 0, 0, 0);
   const currentPage = req.query.page || 1;
@@ -148,6 +150,10 @@ exports.filterOrder = asyncHandler(async (req, res, next) => {
     // console.log(date, 'date')
     if (status == "Payment Paid" || status == "Pending") {
       let totalOrders = await Order.find({
+        createdAt: {
+          $gte: today,
+          $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000), // set the end of the day to 24 hours after the beginning of the day
+        },
         userId: { $in: userId },
         paymentStatus: status,
       }).countDocuments();
@@ -165,6 +171,10 @@ exports.filterOrder = asyncHandler(async (req, res, next) => {
     } else {
       let totalOrders = await Order.find({
         userId: { $in: userId },
+        createdAt: {
+          $gte: today,
+          $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000), // set the end of the day to 24 hours after the beginning of the day
+        },
         paymentStatus: status,
       }).countDocuments();
       const orders = await Order.find({
@@ -211,6 +221,7 @@ exports.rangeOrder = asyncHandler(async (req, res, next) => {
 
       let totalOrders = await Order.find({
         userId: { $in: userId },
+        createdAt: { $gte: start, $lt: end },
         paymentStatus: status,
       }).countDocuments();
 
@@ -226,6 +237,7 @@ exports.rangeOrder = asyncHandler(async (req, res, next) => {
 
       let totalOrders = await Order.find({
         userId: { $in: userId },
+        createdAt: { $gte: start, $lt: end },
         paymentStatus: status,
       }).countDocuments();
       const orders = await Order.find({
