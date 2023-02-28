@@ -349,3 +349,26 @@ exports.cartIncrementDecrement = async (req, res, next) => {
     message: "Cart item updated successfully",
   });
 };
+
+
+exports.getCartLength = async (req, res, next) => {
+  let zero = 0
+  try {
+    const cart = await Cart.findOne({ tableNumber: req.params.tableNumber }).countDocuments();
+    if (!cart) {
+      return res.status(200).json({
+        success: true,
+        zero
+      });
+    }
+    res.status(200).json({
+      success: true,
+      cart,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      error: err.message,
+    });
+  }
+}
