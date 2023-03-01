@@ -386,10 +386,14 @@ exports.deleteFormResults = asyncHandler(async (req, res, next) => {
 
 //Get ALL Results --Get
 exports.getAllResults = asyncHandler(async (req, res, next) => {
+
+  const currentPage = req.query.page || 1;
+  const perPage = 10;
   try {
     const formResponse = await FormResponse.find({
       userId: { $in: req.user.id },
-    }).sort({ createAt: -1 });
+    }).sort({ createAt: -1 }).skip((currentPage - 1) * perPage)
+      .limit(perPage);
 
     res.status(200).json({
       success: true,
