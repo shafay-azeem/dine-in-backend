@@ -181,7 +181,7 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
     name: req.body.name,
     email: req.body.email,
     resName: req.body.resName,
-    resImage: req.body.resName,
+    resImage: req.body.resImage,
 
 
 
