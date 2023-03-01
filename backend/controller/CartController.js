@@ -108,7 +108,6 @@ exports.addModifiertoCartItem = asyncHandler(async (req, res, next) => {
       }
     }
   } else {
-    console.log('inside else')
     cartItem.Modifier.push(req.body);
     cartItem.itemPrice_Total = cartItem.item_Price * cartItem.item_Qty;
     cartItem.Modifier.forEach((modifier) => {

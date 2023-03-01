@@ -141,7 +141,6 @@ exports.filterOrder = asyncHandler(async (req, res, next) => {
   let date = req.query.date;
   let status = req.query.paymentStatus;
 
-  console.log(status, 'status')
   const today = new Date(date);
   today.setUTCHours(0, 0, 0, 0);
   const currentPage = req.query.page || 1;
