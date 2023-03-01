@@ -395,7 +395,7 @@ exports.getAllResults = asyncHandler(async (req, res, next) => {
     }).countDocuments();
     const formResponse = await FormResponse.find({
       userId: { $in: req.user.id },
-    }).sort({ createAt: -1 }).skip((currentPage - 1) * perPage)
+    }).sort({ createdAt: -1 }).skip((currentPage - 1) * perPage)
       .limit(perPage);
     res.status(200).json({
       success: true,
