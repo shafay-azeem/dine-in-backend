@@ -180,6 +180,11 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
   const newUserData = {
     name: req.body.name,
     email: req.body.email,
+    resName: req.body.resName,
+    resImage: req.body.resName,
+
+
+
   };
 
   try {
