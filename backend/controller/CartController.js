@@ -79,14 +79,16 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
 exports.addModifiertoCartItem = asyncHandler(async (req, res, next) => {
   const tableNumber = parseInt(req.params.tableNumber);
   const itemId = req.query.itemId;
-  const item_Size = req.query.item_Size
+  const item_Size = req.query.item_Size.toLowerCase()
   const cart = await Cart.findOne({ tableNumber });
   if (!cart) {
-    res.status(404).json({ message: "First Add Cart then add modifier" });
+    return res.status(404).json({ message: "First Add Cart then add modifier" });
   }
 
   const cartItem = cart.cartItems.find((item) => item.item_Id.toString() === itemId.toString() && item.item_Size === item_Size);
-
+  if (!cartItem) {
+    return res.status(404).json({ message: "Please Select Appropriate Size Acc to Item" });
+  }
   let isModifierNameMatched = false;
   for (const modifier of cartItem.Modifier) {
     if (modifier.Modifier_Name === req.body.Modifier_Name) {
