@@ -390,6 +390,9 @@ exports.getAllResults = asyncHandler(async (req, res, next) => {
   const currentPage = req.query.page || 1;
   const perPage = 10;
   try {
+    const formResponseCount = await FormResponse.find({
+      userId: { $in: req.user.id },
+    }).countDocuments();
     const formResponse = await FormResponse.find({
       userId: { $in: req.user.id },
     }).sort({ createAt: -1 }).skip((currentPage - 1) * perPage)
@@ -397,6 +400,7 @@ exports.getAllResults = asyncHandler(async (req, res, next) => {
     res.status(200).json({
       success: true,
       formResponse,
+      formResponseCount
     });
   } catch (err) {
     console.error(err);
