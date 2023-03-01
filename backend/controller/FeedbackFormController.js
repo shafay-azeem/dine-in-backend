@@ -389,7 +389,7 @@ exports.getAllResults = asyncHandler(async (req, res, next) => {
   try {
     const formResponse = await FormResponse.find({
       userId: { $in: req.user.id },
-    });
+    }).sort({ createAt: -1 });
 
     res.status(200).json({
       success: true,
