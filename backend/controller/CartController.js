@@ -237,9 +237,12 @@ exports.getAllCarts = asyncHandler(async (req, res, next) => {
 exports.getCartByTableNumber = asyncHandler(async (req, res, next) => {
   try {
     const cart = await Cart.findOne({ tableNumber: req.params.tableNumber });
+    let cartLength = cart.cartItems?.length
     res.status(200).json({
       success: true,
       cart,
+      cartLength
+
     });
   } catch (err) {
     res.status(500).json({
