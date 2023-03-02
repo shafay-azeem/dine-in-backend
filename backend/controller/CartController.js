@@ -358,18 +358,12 @@ exports.cartIncrementDecrement = async (req, res, next) => {
 exports.getCartLength = async (req, res, next) => {
   let zero = 0
   try {
-    const cart = await Cart.findOne({ tableNumber: req.params.tableNumber })
-
-    if (!cart) {
-      return res.status(200).json({
-        success: false,
-        message: 'cart doesnot Exist'
-      });
-    }
-    const itemCount = cart[0].cartItems.countDocuments()
+    const cart = await Cart.findOne({ tableNumber: req.params.tableNumber });
+    let cartLength = cart.cartItems?.length
     res.status(200).json({
       success: true,
-      itemCount,
+      cartLength
+
     });
   } catch (err) {
     res.status(500).json({
