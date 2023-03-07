@@ -10,7 +10,6 @@ exports.createOrder = asyncHandler(async (req, res, next) => {
     tableNumber,
     orderedItems,
     instructions,
-    orderStatus,
     paymentStatus,
     address,
     type,
@@ -28,7 +27,6 @@ exports.createOrder = asyncHandler(async (req, res, next) => {
     orderedItems,
     instructions,
     subtotal,
-    orderStatus,
     paymentStatus,
     address,
     type,
@@ -80,6 +78,47 @@ exports.getSingleOrder = asyncHandler(async (req, res, next) => {
     });
   }
 });
+
+
+///UPdate Status of Order
+
+
+exports.updateStatusOfOrder = asyncHandler(async (req, res, next) => {
+  let userId = req.params.id;
+  let orderId = req.query.orderId;
+  const { orderStatus } = req.body
+
+  try {
+    const order = await Order.find({
+      userId: { $in: userId },
+      _id: orderId
+    });
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        error: "Order not found with this id",
+      });
+    }
+
+    order.orderStatus = orderStatus
+    await order.save()
+
+    res.status(200).json({
+      success: true,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
+//---------------
+
+
+
 
 exports.getPaidUnpaidOrders = asyncHandler(async (req, res, next) => {
   let userId = req.params.id;

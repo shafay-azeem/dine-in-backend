@@ -6,6 +6,7 @@ const {
   filterOrder,
   rangeOrder,
   pendingAmount,
+  updateStatusOfOrder,
 } = require("../controller/OrderController");
 const { isAuthenticatedUser } = require("../middleware/auth");
 const router = express.Router();
@@ -21,6 +22,9 @@ router.route("/getPaidUnpaidOrders/:id").get(isAuthenticatedUser, getPaidUnpaidO
 router.route("/filterOrder/:id").get(isAuthenticatedUser, filterOrder);//userID
 router.route("/rangeOrder/:id").get(isAuthenticatedUser, rangeOrder);//userID
 router.route("/pendingAmount/:id").get(isAuthenticatedUser, pendingAmount);//userID
+
+
+router.route("/updateStatusOfOrder/:id").get(isAuthenticatedUser, updateStatusOfOrder);//userID
 
 
 module.exports = router;
