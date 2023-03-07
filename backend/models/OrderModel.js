@@ -65,6 +65,13 @@ const OrderSchema = new mongoose.Schema(
     paymentStatus: {
       type: String,
     },
+    address: {
+      type: String,
+    },
+    type: {
+      type: String,
+    },
+
   },
   { timestamps: true }
 );
