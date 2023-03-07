@@ -206,62 +206,118 @@ exports.filterOrder = asyncHandler(async (req, res, next) => {
   let userId = req.params.id;
   let date = req.query.date;
   let status = req.query.paymentStatus;
-
+  let type = req.query.type;
   const today = new Date(date);
   today.setUTCHours(0, 0, 0, 0);
   const currentPage = req.query.page || 1;
   const perPage = 10;
   try {
-    // console.log(date, 'date')
-    if (status == "Payment Paid" || status == "Pending") {
-      let totalOrders = await Order.find({
-        createdAt: {
-          $gte: today,
-          $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000), // set the end of the day to 24 hours after the beginning of the day
-        },
-        userId: { $in: userId },
-        paymentStatus: status,
-      }).countDocuments();
-      const orders = await Order.find({
-        userId: { $in: userId },
-        createdAt: {
-          $gte: today,
-          $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000), // set the end of the day to 24 hours after the beginning of the day
-        },
-        paymentStatus: status,
-      })
-        .sort({ createdAt: -1 })
-        .skip((currentPage - 1) * perPage)
-        .limit(perPage);
-      res.status(200).json({
-        message: "Orders Fetched",
-        orders: orders,
-        totalOrders: totalOrders,
-      });
+    if (type != "undefined") {
+      if (status == "Payment Paid" || status == "Pending") {
+        let totalOrders = await Order.find({
+          createdAt: {
+            $gte: today,
+            $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000), // set the end of the day to 24 hours after the beginning of the day
+          },
+          userId: { $in: userId },
+          paymentStatus: status,
+          type: type,
+        }).countDocuments();
+        const orders = await Order.find({
+          userId: { $in: userId },
+          createdAt: {
+            $gte: today,
+            $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000), // set the end of the day to 24 hours after the beginning of the day
+          },
+          paymentStatus: status,
+          type: type,
+        })
+          .sort({ createdAt: -1 })
+          .skip((currentPage - 1) * perPage)
+          .limit(perPage);
+        res.status(200).json({
+          message: "Orders Fetched",
+          orders: orders,
+          totalOrders: totalOrders,
+        });
+      } else {
+        let totalOrders = await Order.find({
+          userId: { $in: userId },
+          createdAt: {
+            $gte: today,
+            $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000), // set the end of the day to 24 hours after the beginning of the day
+          },
+          type: type,
+        }).countDocuments();
+        const orders = await Order.find({
+          userId: { $in: userId },
+          createdAt: {
+            $gte: today,
+            $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000), // set the end of the day to 24 hours after the beginning of the day
+          },
+          type: type,
+        })
+          .sort({ createdAt: -1 })
+          .skip((currentPage - 1) * perPage)
+          .limit(perPage);
+        res.status(200).json({
+          message: "Orders Fetched",
+          orders: orders,
+          totalOrders: totalOrders,
+        });
+      }
     } else {
-      let totalOrders = await Order.find({
-        userId: { $in: userId },
-        createdAt: {
-          $gte: today,
-          $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000), // set the end of the day to 24 hours after the beginning of the day
-        },
-      }).countDocuments();
-      const orders = await Order.find({
-        userId: { $in: userId },
-        createdAt: {
-          $gte: today,
-          $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000), // set the end of the day to 24 hours after the beginning of the day
-        },
-      })
-        .sort({ createdAt: -1 })
-        .skip((currentPage - 1) * perPage)
-        .limit(perPage);
-      res.status(200).json({
-        message: "Orders Fetched",
-        orders: orders,
-        totalOrders: totalOrders,
-      });
+      if (status == "Payment Paid" || status == "Pending") {
+        let totalOrders = await Order.find({
+          createdAt: {
+            $gte: today,
+            $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000), // set the end of the day to 24 hours after the beginning of the day
+          },
+          userId: { $in: userId },
+          paymentStatus: status,
+        }).countDocuments();
+        const orders = await Order.find({
+          userId: { $in: userId },
+          createdAt: {
+            $gte: today,
+            $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000), // set the end of the day to 24 hours after the beginning of the day
+          },
+          paymentStatus: status,
+        })
+          .sort({ createdAt: -1 })
+          .skip((currentPage - 1) * perPage)
+          .limit(perPage);
+        res.status(200).json({
+          message: "Orders Fetched",
+          orders: orders,
+          totalOrders: totalOrders,
+        });
+      } else {
+        let totalOrders = await Order.find({
+          userId: { $in: userId },
+          createdAt: {
+            $gte: today,
+            $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000), // set the end of the day to 24 hours after the beginning of the day
+          },
+        }).countDocuments();
+        const orders = await Order.find({
+          userId: { $in: userId },
+          createdAt: {
+            $gte: today,
+            $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000), // set the end of the day to 24 hours after the beginning of the day
+          },
+        })
+          .sort({ createdAt: -1 })
+          .skip((currentPage - 1) * perPage)
+          .limit(perPage);
+        res.status(200).json({
+          message: "Orders Fetched",
+          orders: orders,
+          totalOrders: totalOrders,
+        });
+      }
     }
+
   } catch (err) {
     res.status(500).json({
       success: false,
