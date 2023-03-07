@@ -220,7 +220,6 @@ exports.getPaidUnpaidOrders = asyncHandler(async (req, res, next) => {
           userId: { $in: userId },
         }).countDocuments();
 
-        console.log(totalOrders, "totalOrders");
         const orders = await Order.find({ userId: { $in: userId } })
           .sort({ createdAt: -1 })
           .skip((currentPage - 1) * perPage)
