@@ -89,20 +89,19 @@ exports.updateStatusOfOrder = asyncHandler(async (req, res, next) => {
   const { orderStatus } = req.body
 
   try {
-    const order = await Order.find({
+    const order = await Order.findOne({
       userId: { $in: userId },
-      _id: orderId
+      _id: orderId,
     });
-
     if (!order) {
       return res.status(404).json({
         success: false,
         error: "Order not found with this id",
       });
     }
-
-    order.orderStatus = orderStatus
-    await order.save()
+    console.log(order);
+    order.orderStatus = orderStatus;
+    await order.save();
 
     res.status(200).json({
       success: true,
