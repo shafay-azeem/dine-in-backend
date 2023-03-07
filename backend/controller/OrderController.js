@@ -99,7 +99,7 @@ exports.updateStatusOfOrder = asyncHandler(async (req, res, next) => {
         error: "Order not found with this id",
       });
     }
-    console.log(order);
+
     order.orderStatus = orderStatus;
     await order.save();
 
@@ -478,7 +478,7 @@ exports.rangeOrder = asyncHandler(async (req, res, next) => {
 });
 
 exports.pendingAmount = asyncHandler(async (req, res, next) => {
-  console.log("hello");
+
   let userId = req.params.id;
 
   try {
