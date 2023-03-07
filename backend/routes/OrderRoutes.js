@@ -24,7 +24,7 @@ router.route("/rangeOrder/:id").get(isAuthenticatedUser, rangeOrder);//userID
 router.route("/pendingAmount/:id").get(isAuthenticatedUser, pendingAmount);//userID
 
 
-router.route("/updateStatusOfOrder/:id").get(isAuthenticatedUser, updateStatusOfOrder);//userID
+router.route("/updateStatusOfOrder/:id").put(isAuthenticatedUser, updateStatusOfOrder);//userID
 
 
 module.exports = router;
