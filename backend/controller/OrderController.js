@@ -13,7 +13,7 @@ exports.createOrder = asyncHandler(async (req, res, next) => {
     orderStatus,
     paymentStatus,
     address,
-    type
+    type,
   } = req.body;
 
   let subtotal = 0;
@@ -31,7 +31,7 @@ exports.createOrder = asyncHandler(async (req, res, next) => {
     orderStatus,
     paymentStatus,
     address,
-    type
+    type,
   });
 
   try {
@@ -84,11 +84,11 @@ exports.getSingleOrder = asyncHandler(async (req, res, next) => {
 exports.getPaidUnpaidOrders = asyncHandler(async (req, res, next) => {
   let userId = req.params.id;
   let status = req.query.paymentStatus;
-  let type = req.query.type
+  let type = req.query.type;
   const currentPage = req.query.page || 1;
   const perPage = 10;
   try {
-    if (type) {
+    if (type != "undefined") {
       if (status === "Payment Paid") {
         let totalOrders = await Order.find({
           userId: { $in: userId },
@@ -99,7 +99,8 @@ exports.getPaidUnpaidOrders = asyncHandler(async (req, res, next) => {
           userId: { $in: userId },
           paymentStatus: status,
           type: type,
-        }).sort({ createdAt: -1 })
+        })
+          .sort({ createdAt: -1 })
           .skip((currentPage - 1) * perPage)
           .limit(perPage);
         res.status(200).json({
@@ -117,7 +118,8 @@ exports.getPaidUnpaidOrders = asyncHandler(async (req, res, next) => {
           userId: { $in: userId },
           paymentStatus: status,
           type: type,
-        }).sort({ createdAt: -1 })
+        })
+          .sort({ createdAt: -1 })
           .skip((currentPage - 1) * perPage)
           .limit(perPage);
         res.status(200).json({
@@ -130,7 +132,8 @@ exports.getPaidUnpaidOrders = asyncHandler(async (req, res, next) => {
           userId: { $in: userId },
           type: type,
         }).countDocuments();
-        const orders = await Order.find({ userId: { $in: userId }, type: type }).sort({ createdAt: -1 })
+        const orders = await Order.find({ userId: { $in: userId }, type: type })
+          .sort({ createdAt: -1 })
           .skip((currentPage - 1) * perPage)
           .limit(perPage);
         res.status(200).json({
@@ -148,7 +151,8 @@ exports.getPaidUnpaidOrders = asyncHandler(async (req, res, next) => {
         const orders = await Order.find({
           userId: { $in: userId },
           paymentStatus: status,
-        }).sort({ createdAt: -1 })
+        })
+          .sort({ createdAt: -1 })
           .skip((currentPage - 1) * perPage)
           .limit(perPage);
         res.status(200).json({
@@ -160,12 +164,12 @@ exports.getPaidUnpaidOrders = asyncHandler(async (req, res, next) => {
         let totalOrders = await Order.find({
           userId: { $in: userId },
           paymentStatus: status,
-
         }).countDocuments();
         const orders = await Order.find({
           userId: { $in: userId },
           paymentStatus: status,
-        }).sort({ createdAt: -1 })
+        })
+          .sort({ createdAt: -1 })
           .skip((currentPage - 1) * perPage)
           .limit(perPage);
         res.status(200).json({
@@ -177,7 +181,10 @@ exports.getPaidUnpaidOrders = asyncHandler(async (req, res, next) => {
         let totalOrders = await Order.find({
           userId: { $in: userId },
         }).countDocuments();
-        const orders = await Order.find({ userId: { $in: userId }, }).sort({ createdAt: -1 })
+
+        console.log(totalOrders, "totalOrders");
+        const orders = await Order.find({ userId: { $in: userId } })
+          .sort({ createdAt: -1 })
           .skip((currentPage - 1) * perPage)
           .limit(perPage);
         res.status(200).json({
@@ -187,7 +194,6 @@ exports.getPaidUnpaidOrders = asyncHandler(async (req, res, next) => {
         });
       }
     }
-
   } catch (err) {
     res.status(500).json({
       success: false,
@@ -195,7 +201,6 @@ exports.getPaidUnpaidOrders = asyncHandler(async (req, res, next) => {
     });
   }
 });
-
 
 exports.filterOrder = asyncHandler(async (req, res, next) => {
   let userId = req.params.id;
@@ -224,10 +229,15 @@ exports.filterOrder = asyncHandler(async (req, res, next) => {
           $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000), // set the end of the day to 24 hours after the beginning of the day
         },
         paymentStatus: status,
-      }).sort({ createdAt: -1 })
+      })
+        .sort({ createdAt: -1 })
         .skip((currentPage - 1) * perPage)
         .limit(perPage);
-      res.status(200).json({ message: "Orders Fetched", orders: orders, totalOrders: totalOrders });
+      res.status(200).json({
+        message: "Orders Fetched",
+        orders: orders,
+        totalOrders: totalOrders,
+      });
     } else {
       let totalOrders = await Order.find({
         userId: { $in: userId },
@@ -242,10 +252,15 @@ exports.filterOrder = asyncHandler(async (req, res, next) => {
           $gte: today,
           $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000), // set the end of the day to 24 hours after the beginning of the day
         },
-      }).sort({ createdAt: -1 })
+      })
+        .sort({ createdAt: -1 })
         .skip((currentPage - 1) * perPage)
         .limit(perPage);
-      res.status(200).json({ message: "Orders Fetched", orders: orders, totalOrders: totalOrders });
+      res.status(200).json({
+        message: "Orders Fetched",
+        orders: orders,
+        totalOrders: totalOrders,
+      });
     }
   } catch (err) {
     res.status(500).json({
@@ -275,11 +290,9 @@ exports.rangeOrder = asyncHandler(async (req, res, next) => {
   const currentPage = req.query.page || 1;
   const perPage = 10;
 
-
   try {
     // console.log(date, 'date')
     if (status == "Payment Paid" || status == "Pending") {
-
       let totalOrders = await Order.find({
         userId: { $in: userId },
         createdAt: { $gte: start, $lt: end },
@@ -290,23 +303,32 @@ exports.rangeOrder = asyncHandler(async (req, res, next) => {
         userId: { $in: userId },
         createdAt: { $gte: start, $lt: end },
         paymentStatus: status,
-      }).sort({ createdAt: -1 })
+      })
+        .sort({ createdAt: -1 })
         .skip((currentPage - 1) * perPage)
         .limit(perPage);
-      res.status(200).json({ message: "Orders Fetched", orders: orders, totalOrders: totalOrders });
+      res.status(200).json({
+        message: "Orders Fetched",
+        orders: orders,
+        totalOrders: totalOrders,
+      });
     } else {
-
       let totalOrders = await Order.find({
         userId: { $in: userId },
-        createdAt: { $gte: start, $lt: end }
+        createdAt: { $gte: start, $lt: end },
       }).countDocuments();
       const orders = await Order.find({
         userId: { $in: userId },
         createdAt: { $gte: start, $lt: end },
-      }).sort({ createdAt: -1 })
+      })
+        .sort({ createdAt: -1 })
         .skip((currentPage - 1) * perPage)
         .limit(perPage);
-      res.status(200).json({ message: "Orders Fetched", orders: orders, totalOrders: totalOrders });
+      res.status(200).json({
+        message: "Orders Fetched",
+        orders: orders,
+        totalOrders: totalOrders,
+      });
     }
   } catch (err) {
     res.status(500).json({
