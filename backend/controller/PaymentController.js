@@ -293,3 +293,34 @@ exports.totalRevenue = asyncHandler(async (req, res) => {
     res.status(500).send("Server error");
   }
 });
+
+
+exports.paymentDetailByOrderId = asyncHandler(async (req, res) => {
+  let userId = req.params.id;
+  let orderId = req.query.orderId
+  try {
+    let payment = await Payment.findOne({
+      userId: { $in: userId },
+      order_Id: orderId,
+    })
+
+    if (!payment) {
+      return res.status(404).json({
+        success: false,
+        error: "payment not found with this id",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      payment: payment
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+})
+

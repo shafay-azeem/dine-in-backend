@@ -8,6 +8,7 @@ const {
   getAllPayment,
   getSingleDatePayment,
   getMultiDatePayment,
+  paymentDetailByOrderId,
 } = require("../controller/PaymentController");
 const { isAuthenticatedUser } = require("../middleware/auth");
 
@@ -25,5 +26,8 @@ router.route("/totalRevenue/:id").get(isAuthenticatedUser, totalRevenue); //user
 router.route("/getAllPayment/:id").get(isAuthenticatedUser, getAllPayment); //userID
 router.route("/getSingleDatePayment/:id").get(isAuthenticatedUser, getSingleDatePayment); //userID
 router.route("/getMultiDatePayment/:id").get(isAuthenticatedUser, getMultiDatePayment); //userID
+
+
+router.route("/paymentDetailByOrderId/:id").get(isAuthenticatedUser, paymentDetailByOrderId); //userID
 
 module.exports = router;
