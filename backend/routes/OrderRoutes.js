@@ -15,7 +15,7 @@ const router = express.Router();
 router.route("/createOrder/:id").post(createOrder); //userID
 router.route("/getSingleOrder/:id").get(getSingleOrder); //orderID
 
-// router.route("/getSingleOrder/:id").get(getSingleOrder); //orderID //have somework
+router.route("/getSingleOrder/:id").get(isAuthenticatedUser, getSingleOrder); //orderID //have somework
 
 
 router.route("/getPaidUnpaidOrders/:id").get(isAuthenticatedUser, getPaidUnpaidOrders);//userID

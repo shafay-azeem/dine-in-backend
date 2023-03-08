@@ -56,20 +56,23 @@ async function removeCartByTableNumber(tableNumber) {
 
 //Get Single Order ---Get
 exports.getSingleOrder = asyncHandler(async (req, res, next) => {
-  let orderId = req.params.id;
-  try {
-    const order = await Order.findById(orderId);
+  let userId = req.params.id;
+  let orderId = req.query.orderId;
 
+  try {
+    const order = await Order.findOne({
+      userId: { $in: userId },
+      _id: orderId,
+    });
     if (!order) {
       return res.status(404).json({
         success: false,
         error: "Order not found with this id",
       });
     }
-
     res.status(200).json({
       success: true,
-      order,
+      order: order,
     });
   } catch (error) {
     res.status(400).json({
