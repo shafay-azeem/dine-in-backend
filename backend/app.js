@@ -23,6 +23,8 @@ const order = require("./routes/OrderRoutes");
 const cart = require("./routes/CartRoutes");
 const payment = require("./routes/PaymentRoutes");
 
+const table = require("./routes/TableRoutes");
+
 app.use("/api/menu/V1", menu);
 
 app.use("/api/feedback/V1", feedback);
@@ -38,5 +40,7 @@ app.use("/api/order/V1", order);
 app.use("/api/cart/V1", cart);
 
 app.use("/api/payment/V1", payment);
+
+app.use("/api/table/V1", table);
 
 module.exports = app;
