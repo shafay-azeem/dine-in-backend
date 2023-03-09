@@ -9,6 +9,9 @@ const PaymentSchema = new mongoose.Schema({
     type: mongoose.Schema.ObjectId,
     ref: "Order",
   },
+  uniqueOrderId: {
+    type: String
+  },
   email: {
     type: String,
   },

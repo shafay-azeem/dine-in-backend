@@ -13,6 +13,7 @@ exports.createOrder = asyncHandler(async (req, res, next) => {
     paymentStatus,
     address,
     type,
+    uniqueOrderId
   } = req.body;
 
   let subtotal = 0;
@@ -30,6 +31,7 @@ exports.createOrder = asyncHandler(async (req, res, next) => {
     paymentStatus,
     address,
     type,
+    uniqueOrderId
   });
 
   try {

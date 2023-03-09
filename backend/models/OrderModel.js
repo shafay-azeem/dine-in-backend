@@ -72,6 +72,10 @@ const OrderSchema = new mongoose.Schema(
     type: {
       type: String,
     },
+    uniqueOrderId: {
+      type: String
+    },
+
 
   },
   { timestamps: true }

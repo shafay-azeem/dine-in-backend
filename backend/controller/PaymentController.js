@@ -14,6 +14,7 @@ exports.makePayment = asyncHandler(async (req, res, next) => {
     transaction_id,
     amount,
     payment_status,
+    uniqueOrderId
   } = req.body;
 
   const payment = new Payment({
@@ -25,6 +26,7 @@ exports.makePayment = asyncHandler(async (req, res, next) => {
     transaction_id,
     amount,
     payment_status,
+    uniqueOrderId
   });
 
   try {

@@ -8,6 +8,7 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
     item_Qty = parseInt(item_Qty);
     const tableNumber = parseInt(req.params.tableNumber);
 
+
     const cart = await Cart.findOne({ tableNumber });
     if (!cart) {
       const itemPrice_Total = item_Qty * item_Price;
