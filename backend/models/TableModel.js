@@ -7,7 +7,7 @@ const tableSchema = new mongoose.Schema({
         ref: "User",
     },
     TableNumber: [{
-        type: Number,
+        type: String,
         required: true
     }]
 });
