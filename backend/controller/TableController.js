@@ -12,6 +12,7 @@ exports.tableCreate = asyncHandler(async (req, res, next) => {
                 const table = new Table({
                     userId: req.user._id,
                     TableNumber: i
+
                 });
                 await table.save();
                 tables.push(table);
