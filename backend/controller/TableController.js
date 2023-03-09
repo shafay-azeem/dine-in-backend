@@ -4,7 +4,7 @@ const Table = require("../models/TableModel");
 exports.tableCreate = asyncHandler(async (req, res, next) => {
     try {
         const { tablesCount } = req.body;
-        if (isNaN(tablesCount) || n < 1) {
+        if (isNaN(tablesCount) || tablesCount < 1) {
             res.status(400).send('Invalid input');
         } else {
             const tables = [];
