@@ -22,7 +22,7 @@ exports.tableCreate = asyncHandler(async (req, res, next) => {
         res.status(500).json({
             success: false,
             message: "Failed to create tables",
-            error: err.message,
+            error: error.message,
         });
     }
 })
