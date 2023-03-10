@@ -8,12 +8,13 @@ exports.createOrder = asyncHandler(async (req, res, next) => {
   const {
     customerName,
     tableNumber,
+    TableNumber,
     orderedItems,
     instructions,
     paymentStatus,
     address,
     type,
-    uniqueOrderId
+    uniqueOrderId,
   } = req.body;
 
   let subtotal = 0;
@@ -25,6 +26,7 @@ exports.createOrder = asyncHandler(async (req, res, next) => {
     userId: userId,
     customerName,
     tableNumber,
+    TableNumber,
     orderedItems,
     instructions,
     subtotal,

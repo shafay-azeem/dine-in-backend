@@ -48,3 +48,14 @@ exports.getTablebyUserId = asyncHandler(async (req, res, next) => {
         tables: tables,
     });
 });
+
+exports.getTableCountbyUserId = asyncHandler(async (req, res, next) => {
+    let tablesCount = await Table.findOne({ userId: { $in: req.user.id } });
+    let count = tablesCount.TableNumber;
+
+    res.status(200).json({
+        success: true,
+        message: "Table Count Get Successfully",
+        tables: count,
+    });
+});
