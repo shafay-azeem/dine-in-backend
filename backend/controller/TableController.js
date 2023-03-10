@@ -7,10 +7,17 @@ exports.tableCreate = asyncHandler(async (req, res, next) => {
         if (isNaN(tablesCount) || tablesCount < 1) {
             res.status(400).send("Invalid input");
         } else {
-            const table = new Table({
-                userId: req.user._id,
-                TableNumber: tablesCount,
-            });
+            let tablesCount = await Table.findOne({ userId: { $in: req.user.id } });
+            let count = tablesCount.TableNumber;
+            if (!count) {
+                const table = new Table({
+                    userId: req.user._id,
+                    TableNumber: tablesCount,
+                });
+            } else {
+                count = count
+            }
+
             await table.save();
         }
 
