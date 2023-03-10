@@ -8,8 +8,8 @@ exports.tableCreate = asyncHandler(async (req, res, next) => {
         if (isNaN(tablesCount) || tablesCount < 1) {
             res.status(400).send("Invalid input");
         } else {
-            let tablesCount = await Table.findOne({ userId: { $in: req.user.id } });
-            let count = tablesCount.TableNumber;
+            table = await Table.findOne({ userId: { $in: req.user.id } });
+            let count = table.TableNumber;
             if (!count) {
                 table = new Table({
                     userId: req.user._id,
