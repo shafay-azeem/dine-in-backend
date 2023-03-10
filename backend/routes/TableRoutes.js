@@ -6,6 +6,6 @@ const router = express.Router();
 
 
 router.route("/createTables").post(isAuthenticatedUser, tableCreate); //userID
-router.route("/getTablebyUserId").post(isAuthenticatedUser, getTablebyUserId); //userID
+router.route("/getTablebyUserId").get(isAuthenticatedUser, getTablebyUserId); //userID
 
 module.exports = router;
