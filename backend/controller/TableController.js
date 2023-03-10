@@ -16,7 +16,7 @@ exports.tableCreate = asyncHandler(async (req, res, next) => {
                     TableNumber: tablesCount,
                 });
             } else {
-                count = count
+                table.TableNumber = tablesCount
             }
 
             await table.save();
