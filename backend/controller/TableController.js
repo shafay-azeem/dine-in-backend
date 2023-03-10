@@ -35,13 +35,13 @@ exports.getTablebyUserId = asyncHandler(async (req, res, next) => {
     let tablesCount = await Table.find({ userId: { $in: req.user.id } })
     const tables = [];
     for (let i = 1; i <= tablesCount; i++) {
-        const table = new Table({
+        const table = {
             userId: req.user._id,
             TableNumber: { "Table Number": i }
-        });
-        await table.save();
+        };
         tables.push(table);
     }
+
     res.status(200).json({
         success: true,
         message: 'Tables Get Successfully',
