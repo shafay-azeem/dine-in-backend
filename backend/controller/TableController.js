@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler");
 const Table = require("../models/TableModel");
 
 exports.tableCreate = asyncHandler(async (req, res, next) => {
+    let table
     try {
         const { tablesCount } = req.body;
         if (isNaN(tablesCount) || tablesCount < 1) {
@@ -10,7 +11,7 @@ exports.tableCreate = asyncHandler(async (req, res, next) => {
             let tablesCount = await Table.findOne({ userId: { $in: req.user.id } });
             let count = tablesCount.TableNumber;
             if (!count) {
-                const table = new Table({
+                table = new Table({
                     userId: req.user._id,
                     TableNumber: tablesCount,
                 });
