@@ -8,11 +8,15 @@ const asyncHandler = require("express-async-handler");
 //SignUp User --Post
 exports.createUser = asyncHandler(async (req, res, next) => {
   const { name, email, password, resName, resImage } = req.body;
-
-  // console.log(req.body)
-
   try {
-    const user = await User.create({
+    let user
+    user = await User.findOne({ email: email })
+    if (user) {
+      const error = new Error('User Already Exist with this Email')
+      error.statusCode = 400
+      throw error
+    }
+    user = await User.create({
       name,
       email,
       password,
@@ -26,63 +30,52 @@ exports.createUser = asyncHandler(async (req, res, next) => {
       token: user.getJwtToken(user._id),
     });
   } catch (err) {
-    if (err.name === "ValidationError") {
-      return res.status(400).json({
-        success: false,
-        error: "Validation Error",
-        message: err.message,
-      });
+    if (!err.statusCode) {
+      err.statusCode = 500
     }
-    if (err.code === 11000) {
-      return res.status(400).json({
-        success: false,
-        error: "Email already exists",
-      });
-    }
-    return res.status(500).json({
-      success: false,
-      error: "Internal Server Error",
-    });
+    next(err)
   }
 });
+
+
 
 //login --Post
 exports.loginUser = asyncHandler(async (req, res, next) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: "Please Enter Your Email & Password",
-      });
+      const error = new Error('Please Enter Your All Fields')
+      error.statusCode = 422
+      throw error
+
     }
     const user = await User.findOne({ email }).select("+password");
     if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: "USER is not found with this email and password",
-      });
+      const error = new Error('User is not found with this email')
+      error.statusCode = 401
+      throw error
     }
     const isPasswordMatched = await user.comparePassword(password);
     if (!isPasswordMatched) {
-      return res.status(401).json({
-        success: false,
-        message: "USER is not found with this email and password",
-      });
+      const error = new Error('Password is in correct')
+      error.statusCode = 401
+      throw error
     }
-    return res.status(201).json({
+    return res.status(200).json({
       success: true,
       user,
       message: "Login Successfully",
       token: user.getJwtToken(user._id),
     });
   } catch (err) {
-    return res.status(500).json({
-      success: false,
-      error: "Internal Server Error",
-    });
+    if (!err.statusCode) {
+      err.statusCode = 500
+    }
+    next(err)
   }
 });
+
+
 
 //Forgot Password --Post
 exports.forgotPassword = asyncHandler(async (req, res, next) => {

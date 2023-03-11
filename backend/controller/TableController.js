@@ -27,43 +27,64 @@ exports.tableCreate = asyncHandler(async (req, res, next) => {
             message: "Tables Rigesterd Successfully",
         });
     } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: "Failed to create tables",
-            error: error.message,
-        });
+        if (!error.statusCode) {
+            error.statusCode = 500
+        }
+        next(error)
     }
 });
 
 exports.getTablebyUserId = asyncHandler(async (req, res, next) => {
-    let tablesCount = await Table.findOne({ userId: { $in: req.user.id } });
-    let count = tablesCount.TableNumber;
 
-    console.log(tablesCount);
-    const tables = [];
-    for (let i = 1; i <= count; i++) {
-        const table = {
-            userId: req.user._id,
-            TableNumber: i,
-        };
+    try {
+        let tablesCount = await Table.findOne({ userId: { $in: req.user.id } });
+        if (!tablesCount) {
+            const error = new Error('Table not found')
+            error.statusCode = 404
+            throw error // it will end up in catch block followed by next thats why throw is used in async code
+        }
+        let count = tablesCount.TableNumber;
+        const tables = [];
+        for (let i = 1; i <= count; i++) {
+            const table = {
+                userId: req.user._id,
+                TableNumber: i,
+            };
 
-        tables.push(table);
+            tables.push(table);
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Tables Get Successfully",
+            tables: tables,
+        });
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = 500
+        }
+        next(error)
     }
-
-    res.status(200).json({
-        success: true,
-        message: "Tables Get Successfully",
-        tables: tables,
-    });
 });
 
 exports.getTableCountbyUserId = asyncHandler(async (req, res, next) => {
-    let tablesCount = await Table.findOne({ userId: { $in: req.user.id } });
-    let count = tablesCount.TableNumber;
-
-    res.status(200).json({
-        success: true,
-        message: "Table Count Get Successfully",
-        tables: count,
-    });
+    try {
+        let tablesCount = await Table.findOne({ userId: { $in: req.user.id } });
+        if (!tablesCount) {
+            const error = new Error('Table not found')
+            error.statusCode = 404
+            throw error // it will end up in catch block followed by next thats why throw is used in async code
+        }
+        let count = tablesCount.TableNumber;
+        res.status(200).json({
+            success: true,
+            message: "Table Count Get Successfully",
+            tables: count,
+        });
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = 500
+        }
+        next(error)
+    }
 });
