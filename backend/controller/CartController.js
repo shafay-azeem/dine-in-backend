@@ -25,7 +25,11 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
         tableNumber,
       });
       await newCart.save();
-      res.status(200).json(newCart);
+      res.status(201).json({
+        success: true,
+        message: 'item Added in Cart Successfully',
+        newCart
+      });
     } else {
       let itemExists = false;
       for (let i = 0; i < cart.cartItems.length; i++) {
