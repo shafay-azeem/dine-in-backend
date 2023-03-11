@@ -9,8 +9,8 @@ exports.tableCreate = asyncHandler(async (req, res, next) => {
             res.status(400).send("Invalid input");
         } else {
             table = await Table.findOne({ userId: { $in: req.user.id } });
-            let count = table.TableNumber;
-            if (!count) {
+
+            if (!table) {
                 table = new Table({
                     userId: req.user._id,
                     TableNumber: tablesCount,
