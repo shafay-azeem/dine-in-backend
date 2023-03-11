@@ -99,45 +99,47 @@ exports.createItem = asyncHandler(async (req, res, next) => {
       item,
     });
   } catch (error) {
-    if (error.name === "ValidationError") {
-      return res.status(400).json({
-        success: false,
-        message: "Validation error",
-        error: error.message,
-      });
+    if (!error.statusCode) {
+      error.statusCode = 500
     }
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-      error: error.message,
-    });
+    next(error)
   }
 });
 
 //Update Section Function
 async function updateSection(Id, itemRes) {
   let section = await Section.findById(Id);
+  if (!section) {
+    const error = new Error('Section Not Found')
+    error.statusCode = 404
+    throw error
+  }
   section.item.push(itemRes);
   await section.save({ validateBeforeSave: false });
 }
 
 //Get All Item by Section ID ---Get
 exports.getAllItemBySectionId = asyncHandler(async (req, res, next) => {
-  let sectionId = req.params.id;
-  await Item.find({ sectionId: { $in: sectionId } })
-    .then((item) => {
-      return res.status(200).json({
-        success: true,
-        item,
-      });
-    })
-    .catch((error) => {
-      console.error(error);
-      return res.status(400).json({
-        success: false,
-        error: "Error finding items",
-      });
+
+  try {
+    let sectionId = req.params.id;
+    let item = await Item.find({ sectionId: { $in: sectionId } }).exec()
+    if (!item) {
+      const error = new Error('Item Not Found')
+      error.statusCode = 404
+      throw error
+    }
+    return res.status(200).json({
+      success: true,
+      item,
     });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+
 });
 
 //Get Single Item ---Get
@@ -145,16 +147,20 @@ exports.getSingleItem = asyncHandler(async (req, res, next) => {
   try {
     let itemId = req.params.id;
     const item = await Item.findById(itemId);
+    if (!item) {
+      const error = new Error('Item Not Found')
+      error.statusCode = 404
+      throw error
+    }
     res.status(200).json({
       success: true,
       item,
     });
-  } catch (error) {
-    console.error(error);
-    res.status(400).json({
-      success: false,
-      error: "Error finding item",
-    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
   }
 });
 
@@ -163,10 +169,9 @@ exports.deleteItem = asyncHandler(async (req, res, next) => {
   try {
     let item = await Item.findById(req.params.id);
     if (!item) {
-      return res.status(500).json({
-        success: false,
-        message: "Invalid Id",
-      });
+      const error = new Error('Item Not Found')
+      error.statusCode = 404
+      throw error
     }
     await item.remove();
     res.status(200).json({
@@ -174,64 +179,56 @@ exports.deleteItem = asyncHandler(async (req, res, next) => {
       message: "Item deleted successfully",
     });
   } catch (error) {
-    console.error(error);
-    res.status(400).json({
-      success: false,
-      error: "Error deleting item",
-    });
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
   }
 });
 
 //Delete All Item
 exports.deleteAllItem = asyncHandler(async (req, res, next) => {
   try {
-    let deletedItems = await Item.deleteMany();
-    if (deletedItems.deletedCount > 0) {
-      res.status(200).json({
-        success: true,
-        message: "All Item Deleted Successfully",
-      });
-    } else {
-      res.status(404).json({
-        success: false,
-        message: "No items to delete",
-      });
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(400).json({
-      success: false,
-      error: "Error deleting items",
+    await Item.deleteMany();
+    res.status(200).json({
+      success: true,
+      message: "All Item Deleted Successfully",
     });
+
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
   }
 });
 
 //Update Item By Id
 exports.updateItem = asyncHandler(async (req, res, next) => {
-  let item;
+
   try {
+    let item;
     item = await Item.findById(req.params.id);
     if (!item) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid Id",
-      });
+      const error = new Error('Item Not Found')
+      error.statusCode = 404
+      throw error
     }
     item = await Item.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
       useUnified: false,
     });
-  } catch (err) {
-    return res.status(500).json({
-      success: false,
-      message: "An error occurred while updating the item",
-      error: err,
+    res.status(200).json({
+      success: true,
+      item,
     });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
   }
 
-  res.status(200).json({
-    success: true,
-    item,
-  });
+
 });
