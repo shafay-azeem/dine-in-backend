@@ -4,85 +4,93 @@ const Order = require("../models/OrderModel");
 
 //Create Order ---Post
 exports.createOrder = asyncHandler(async (req, res, next) => {
-  let userId = req.params.id;
-  const {
-    customerName,
-    tableNumber,
-    TableNumber,
-    orderedItems,
-    instructions,
-    paymentStatus,
-    address,
-    type,
-    uniqueOrderId,
-  } = req.body;
-
-  let subtotal = 0;
-  orderedItems.forEach((item) => {
-    subtotal += item.itemPrice_Total;
-  });
-
-  const order = new Order({
-    userId: userId,
-    customerName,
-    tableNumber,
-    TableNumber,
-    orderedItems,
-    instructions,
-    subtotal,
-    paymentStatus,
-    address,
-    type,
-    uniqueOrderId
-  });
 
   try {
+    let userId = req.params.id;
+    const {
+      customerName,
+      tableNumber,
+      TableNumber,
+      orderedItems,
+      instructions,
+      paymentStatus,
+      address,
+      type,
+      uniqueOrderId,
+    } = req.body;
+
+    let subtotal = 0;
+    orderedItems.forEach((item) => {
+      subtotal += item.itemPrice_Total;
+    });
+
+    const order = new Order({
+      userId: userId,
+      customerName,
+      tableNumber,
+      TableNumber,
+      orderedItems,
+      instructions,
+      subtotal,
+      paymentStatus,
+      address,
+      type,
+      uniqueOrderId
+    });
+
+
     await order.save();
 
     // Remove ordered items from the cart
     await removeCartByTableNumber(req.body.tableNumber);
 
-    res.status(201).send({ message: "Order created successfully", order });
+    res.status(201).json({ success: true, message: "Order created successfully", order });
+
   } catch (error) {
-    res.status(400).send({ error: error.message });
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    next(error);
   }
+
 });
 
 // Remove cart item
 
 async function removeCartByTableNumber(tableNumber) {
-  try {
-    await Cart.findOneAndDelete({ tableNumber });
-  } catch (err) {
-    console.error(`Error deleting cart for table ${tableNumber}:`, err);
+  let cart = await Cart.findOneAndDelete({ tableNumber });
+  if (!cart) {
+    const error = new Error('cart Not Found')
+    error.statusCode = 404
+    throw error
   }
+
 }
 
 //Get Single Order ---Get
 exports.getSingleOrder = asyncHandler(async (req, res, next) => {
-  let userId = req.params.id;
-  let orderId = req.query.orderId;
-
   try {
+    let userId = req.params.id;
+    let orderId = req.query.orderId;
     const order = await Order.findOne({
       userId: { $in: userId },
       _id: orderId,
     });
     if (!order) {
-      return res.status(404).json({
-        success: false,
-        error: "Order not found with this id",
-      });
+      const error = new Error('Order Not Found')
+      error.statusCode = 404
+      throw error
     }
     res.status(200).json({
       success: true,
+      message: 'Order get Successfully',
       order: order,
     });
   } catch (error) {
-    res.status(400).json({
-      success: false,
-      error: error.message,
-    });
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    next(error);
   }
 });
 
@@ -91,20 +99,18 @@ exports.getSingleOrder = asyncHandler(async (req, res, next) => {
 
 
 exports.updateStatusOfOrder = asyncHandler(async (req, res, next) => {
-  let userId = req.params.id;
-  let orderId = req.query.orderId;
-  const { orderStatus } = req.body
-
   try {
+    let userId = req.params.id;
+    let orderId = req.query.orderId;
+    const { orderStatus } = req.body
     const order = await Order.findOne({
       userId: { $in: userId },
       _id: orderId,
     });
     if (!order) {
-      return res.status(404).json({
-        success: false,
-        error: "Order not found with this id",
-      });
+      const error = new Error('Order Not Found')
+      error.statusCode = 404
+      throw error
     }
 
     order.orderStatus = orderStatus;
@@ -112,12 +118,13 @@ exports.updateStatusOfOrder = asyncHandler(async (req, res, next) => {
 
     res.status(200).json({
       success: true,
+      message: 'Status Updated Successfully'
     });
   } catch (error) {
-    res.status(400).json({
-      success: false,
-      error: error.message,
-    });
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    next(error);
   }
 });
 
@@ -127,12 +134,13 @@ exports.updateStatusOfOrder = asyncHandler(async (req, res, next) => {
 
 
 exports.getPaidUnpaidOrders = asyncHandler(async (req, res, next) => {
-  let userId = req.params.id;
-  let status = req.query.paymentStatus;
-  let type = req.query.type;
-  const currentPage = req.query.page || 1;
-  const perPage = 10;
+
   try {
+    let userId = req.params.id;
+    let status = req.query.paymentStatus;
+    let type = req.query.type;
+    const currentPage = req.query.page || 1;
+    const perPage = 10;
     if (type != "undefined") {
       if (status === "Payment Paid") {
         let totalOrders = await Order.find({
@@ -238,24 +246,25 @@ exports.getPaidUnpaidOrders = asyncHandler(async (req, res, next) => {
         });
       }
     }
-  } catch (err) {
-    res.status(500).json({
-      success: false,
-      error: err.message,
-    });
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    next(error);
   }
 });
 
 exports.filterOrder = asyncHandler(async (req, res, next) => {
-  let userId = req.params.id;
-  let date = req.query.date;
-  let status = req.query.paymentStatus;
-  let type = req.query.type;
-  const today = new Date(date);
-  today.setUTCHours(0, 0, 0, 0);
-  const currentPage = req.query.page || 1;
-  const perPage = 10;
+
   try {
+    let userId = req.params.id;
+    let date = req.query.date;
+    let status = req.query.paymentStatus;
+    let type = req.query.type;
+    const today = new Date(date);
+    today.setUTCHours(0, 0, 0, 0);
+    const currentPage = req.query.page || 1;
+    const perPage = 10;
     if (type != "undefined") {
       if (status == "Payment Paid" || status == "Pending") {
         let totalOrders = await Order.find({
@@ -362,35 +371,36 @@ exports.filterOrder = asyncHandler(async (req, res, next) => {
       }
     }
 
-  } catch (err) {
-    res.status(500).json({
-      success: false,
-      error: err.message,
-    });
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    next(error);
   }
 });
 
 exports.rangeOrder = asyncHandler(async (req, res, next) => {
-  let userId = req.params.id;
-  let status = req.query.paymentStatus;
-  let type = req.query.type;
-  const startDate = new Date(req.query.startDate);
-  const endDate = new Date(req.query.endDate);
-  const start = new Date(
-    startDate.getFullYear(),
-    startDate.getMonth(),
-    startDate.getDate()
-  );
-  const end = new Date(
-    endDate.getFullYear(),
-    endDate.getMonth(),
-    endDate.getDate() + 1
-  );
 
-  const currentPage = req.query.page || 1;
-  const perPage = 10;
 
   try {
+    let userId = req.params.id;
+    let status = req.query.paymentStatus;
+    let type = req.query.type;
+    const startDate = new Date(req.query.startDate);
+    const endDate = new Date(req.query.endDate);
+    const start = new Date(
+      startDate.getFullYear(),
+      startDate.getMonth(),
+      startDate.getDate()
+    );
+    const end = new Date(
+      endDate.getFullYear(),
+      endDate.getMonth(),
+      endDate.getDate() + 1
+    );
+
+    const currentPage = req.query.page || 1;
+    const perPage = 10;
     if (type != "undefined") {
       if (status == "Payment Paid" || status == "Pending") {
         let totalOrders = await Order.find({
@@ -475,24 +485,30 @@ exports.rangeOrder = asyncHandler(async (req, res, next) => {
       }
     }
 
-  } catch (err) {
-    res.status(500).json({
-      success: false,
-      error: err.message,
-    });
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    next(error);
   }
 });
 
 exports.pendingAmount = asyncHandler(async (req, res, next) => {
 
-  let userId = req.params.id;
+
 
   try {
+    let userId = req.params.id;
     const orders = await Order.find({
       userId: userId,
       paymentStatus: "Pending",
     });
 
+    if (!orders) {
+      const error = new Error('orders Not Found')
+      error.statusCode = 404
+      throw error
+    }
     const totalSubtotal = orders.reduce(
       (acc, order) => acc + order.subtotal,
       0
@@ -502,9 +518,9 @@ exports.pendingAmount = asyncHandler(async (req, res, next) => {
       .status(200)
       .json({ message: "Pending Amount", pendingAmount: totalSubtotal });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message,
-    });
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    next(error);
   }
 });
