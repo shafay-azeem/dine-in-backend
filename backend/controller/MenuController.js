@@ -31,13 +31,14 @@ exports.createMenu = asyncHandler(async (req, res, next) => {
       menu,
     });
   } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to create menu",
-      error: err.message,
-    });
+    if (!err.statusCode) {
+      err.statusCode = 500
+    }
+    next(err)
   }
 });
+
+
 
 //Get Single Menu ---Get
 
@@ -60,10 +61,9 @@ exports.getSingleMenu = asyncHandler(async (req, res, next) => {
     });
 
     if (!menu) {
-      return res.status(404).json({
-        success: false,
-        error: "Menu not found",
-      });
+      const error = new Error('Menu not found')
+      error.statusCode = 404
+      throw error
     }
 
     res.status(200).json({
@@ -71,12 +71,14 @@ exports.getSingleMenu = asyncHandler(async (req, res, next) => {
       menu,
     });
   } catch (error) {
-    res.status(400).json({
-      success: false,
-      error: error.message,
-    });
+    if (!error.statusCode) {
+      error.statusCode = 500
+    }
+    next(error)
   }
 });
+
+
 
 //Get All Menu ---Get
 exports.getAllMenu = asyncHandler(async (req, res, next) => {
@@ -95,28 +97,34 @@ exports.getAllMenu = asyncHandler(async (req, res, next) => {
         },
       ],
     });
+
+    if (!menu) {
+      const error = new Error('Menu not found')
+      error.statusCode = 404
+      throw error
+    }
     res.status(200).json({
       success: true,
       menu,
     });
-  } catch (err) {
-    res.status(500).json({
-      success: false,
-      error: err.message,
-    });
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500
+    }
+    next(error)
   }
 });
+
+
 
 //Delete Menu By Menu Id
 exports.deleteMenu = asyncHandler(async (req, res, next) => {
   try {
     let menu = await Menu.findById(req.params.id);
-
     if (!menu) {
-      return res.status(404).json({
-        success: false,
-        message: "Menu not found with this Id",
-      });
+      const error = new Error('Menu not found with this Id')
+      error.statusCode = 404
+      throw error
     }
 
     await menu.remove();
@@ -126,10 +134,10 @@ exports.deleteMenu = asyncHandler(async (req, res, next) => {
       message: "Menu deleted successfully",
     });
   } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    if (!error.statusCode) {
+      error.statusCode = 500
+    }
+    next(error)
   }
 });
 
@@ -137,32 +145,31 @@ exports.deleteMenu = asyncHandler(async (req, res, next) => {
 exports.deleteAllMenu = asyncHandler(async (req, res, next) => {
   try {
     let menu = await Menu.deleteMany();
-
     res.status(200).json({
       success: true,
       message: "All Menu Deleted Successfully",
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: "Error while deleting all menus",
-      error: error.message,
-    });
+    if (!error.statusCode) {
+      error.statusCode = 500
+    }
+    next(error)
   }
 });
 
+
+
 //Update Menu By Id
 exports.updateMenu = asyncHandler(async (req, res, next) => {
-  let menu = await Menu.findById(req.params.id);
-
-  if (!menu) {
-    return res.status(400).json({
-      success: false,
-      message: "Invalid Id",
-    });
-  }
 
   try {
+    let menu
+    menu = await Menu.findById(req.params.id);
+    if (!menu) {
+      const error = new Error('Menu Not FOund')
+      error.statusCode = 404
+      throw error
+    }
     menu = await Menu.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
@@ -186,11 +193,13 @@ exports.updateMenu = asyncHandler(async (req, res, next) => {
       message: "Menu Update Successfully",
       menu,
     });
+
   } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: "Invalid Data",
-      error: error.message,
-    });
+    if (!error.statusCode) {
+      error.statusCode = 500
+    }
+    next(error)
   }
+
+
 });

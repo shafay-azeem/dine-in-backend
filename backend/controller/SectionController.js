@@ -34,41 +34,50 @@ exports.createSection = asyncHandler(async (req, res, next) => {
       section,
     });
   } catch (err) {
-    return res.status(400).json({
-      success: false,
-      message: err.message,
-    });
+    if (!err.statusCode) {
+      err.statusCode = 500
+    }
+    next(err)
   }
 });
 
 //Update Function
 async function updateMenu(menuId, sectionRes) {
   let menu = await Menu.findById(menuId);
+  if (!menu) {
+    const error = new Error('Menu Not Foun')
+    error.statusCode = 404
+    throw error
+  }
   menu.section.push(sectionRes);
   await menu.save({ validateBeforeSave: false });
 }
 
+
+
+
 //Delete Section ---Delete
 exports.deleteSection = asyncHandler(async (req, res, next) => {
-  let section = await Section.findById(req.params.id);
-  if (!section) {
-    return res.status(400).json({
-      success: false,
-      message: "Invalid Id",
-    });
-  }
   try {
+    let section = await Section.findById(req.params.id);
+    if (!section) {
+      const error = new Error('Section Not Found')
+      error.statusCode = 404
+      throw error
+    }
     await section.remove();
-  } catch (err) {
-    return res.status(500).json({
-      success: false,
-      message: err.message,
+    res.status(200).json({
+      success: true,
+      message: "Section deleted successfully",
     });
+
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500
+    }
+    next(error)
   }
-  res.status(200).json({
-    success: true,
-    message: "Section deleted successfully",
-  });
+
 });
 
 //Delete All Section
@@ -81,10 +90,10 @@ exports.deleteAllSection = asyncHandler(async (req, res, next) => {
       message: "All Section Deleted Successfully",
     });
   } catch (error) {
-    res.status(400).json({
-      success: false,
-      error: error.message,
-    });
+    if (!error.statusCode) {
+      error.statusCode = 500
+    }
+    next(error)
   }
 });
 
@@ -100,25 +109,33 @@ exports.getAllSection = asyncHandler(async (req, res, next) => {
           path: "item", // in section, populate item
         },
       });
-  } catch (err) {
-    return res.status(400).json({
-      success: false,
-      message: err.message,
+
+    if (!section) {
+      const error = new Error('Section Not Found')
+      error.statusCode = 404
+      throw error
+    }
+    res.status(200).json({
+      success: true,
+      section,
     });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500
+    }
+    next(err)
   }
 
-  res.status(200).json({
-    success: true,
-    section,
-  });
 });
+
+
+
 
 //Get All Section By Menu Id ---Get
 exports.getAllSectionByMenuId = asyncHandler(async (req, res, next) => {
   try {
     let menuId = req.params.id;
-
-    await Section.find({ menuId: { $in: menuId } })
+    let section = await Section.find({ menuId: { $in: menuId } })
       .populate("item")
       .populate({
         path: "subSection", // populate subsectionsection
@@ -126,51 +143,57 @@ exports.getAllSectionByMenuId = asyncHandler(async (req, res, next) => {
           path: "item", // in section, populate item
         },
       })
-      .then((section) => {
-        return res.status(200).json({
-          success: true,
-          section,
-        });
-      });
-  } catch (err) {
-    return res.status(500).json({
-      success: false,
-      message: "An error occurred while fetching sections",
-      error: err.message,
+
+    if (!section) {
+      const error = new Error('Section Not Found')
+      error.statusCode = 404
+      throw error
+    }
+    res.status(200).json({
+      success: true,
+      section,
     });
+
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500
+    }
+    next(err)
   }
 });
 
+
+
 //Get Single Section ---Get
 exports.getSingleSection = asyncHandler(async (req, res, next) => {
-  let sectionId = req.params.id;
-  await Section.findById(sectionId)
-    .populate("item")
-    .populate({
-      path: "subSection", // populate subsectionsection
-      populate: {
-        path: "item", // in section, populate item
-      },
-    })
-    .then((section) => {
-      if (!section) {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid section Id",
-        });
-      }
-      return res.status(200).json({
-        success: true,
-        section,
-      });
-    })
-    .catch((err) => {
-      return res.status(400).json({
-        success: false,
-        message: "Something went wrong",
-        error: err,
-      });
+  try {
+    let sectionId = req.params.id;
+    let section = await Section.findById(sectionId)
+      .populate("item")
+      .populate({
+        path: "subSection", // populate subsectionsection
+        populate: {
+          path: "item", // in section, populate item
+        },
+      })
+    if (!section) {
+      const error = new Error('Section Not Found')
+      error.statusCode = 404
+      throw error
+    }
+    return res.status(200).json({
+      success: true,
+      section,
     });
+
+
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500
+    }
+    next(error)
+  }
+
 });
 
 //Update Section By Id
@@ -179,10 +202,9 @@ exports.updateSection = asyncHandler(async (req, res, next) => {
   try {
     section = await Section.findById(req.params.id);
     if (!section) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid Id",
-      });
+      const error = new Error('Section Not Found')
+      error.statusCode = 404
+      throw error
     }
     section = await Section.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
@@ -201,9 +223,9 @@ exports.updateSection = asyncHandler(async (req, res, next) => {
       section,
     });
   } catch (err) {
-    res.status(400).json({
-      success: false,
-      message: err.message,
-    });
+    if (!err.statusCode) {
+      err.statusCode = 500
+    }
+    next(err)
   }
 });
