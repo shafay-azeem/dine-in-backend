@@ -98,73 +98,89 @@ exports.createSubSectionItem = asyncHandler(async (req, res, next) => {
       subSectionItem,
     });
   } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    next(error);
   }
 });
 
 //Update Section Function
 async function updateSubSection(subSectionId, subSectionItemRes) {
   let subSection = await SubSection.findById(subSectionId);
+
+  if (!subSection) {
+    const error = new Error('SubSection  Not Found')
+    error.statusCode = 404
+    throw error
+  }
   subSection.item.push(subSectionItemRes);
   await subSection.save({ validateBeforeSave: false });
 }
 
 //Delete All Sub Item
 exports.deleteAllSubItem = asyncHandler(async (req, res, next) => {
-  let subSectionItem;
+
   try {
+    let subSectionItem;
     subSectionItem = await SubSectionItem.deleteMany();
     res.status(200).json({
       success: true,
       message: "All SubSection Item Deleted Successfully",
     });
   } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    next(error);
   }
 });
 
 //Get All SubSection Item ---Get
 exports.getAllSubItem = asyncHandler(async (req, res, next) => {
-  const subSectionItem = await SubSectionItem.find().catch((err) => {
-    return res.status(400).json({
-      success: false,
-      message: err.message,
+
+  try {
+    const subSectionItem = await SubSectionItem.find().exec()
+    if (!subSectionItem) {
+      const error = new Error('SubSection Item Not Found')
+      error.statusCode = 404
+      throw error
+    }
+    res.status(200).json({
+      success: true,
+      subSectionItem,
     });
-  });
-  if (!subSectionItem) {
-    return res.status(400).json({
-      success: false,
-      message: "No subSection item found",
-    });
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    next(error);
   }
-  res.status(200).json({
-    success: true,
-    subSectionItem,
-  });
 });
 
 //Get All Item by Subsection ID ---Get
 exports.getAllItemBySubSectionId = asyncHandler(async (req, res, next) => {
-  let subSectionId = req.params.id;
-  SubSectionItem.find({ subSectionId: { $in: subSectionId } })
-    .then((item) => {
-      res.status(200).json({
-        success: true,
-        item,
-      });
-    })
-    .catch((error) => {
-      res.status(400).json({
-        success: false,
-        message: error.message,
-      });
+  try {
+    let subSectionId = req.params.id;
+    let item = await SubSectionItem.find({ subSectionId: { $in: subSectionId } }).exec()
+    if (!item) {
+      const error = new Error('SubSection Item Item Not Found')
+      error.statusCode = 404
+      throw error
+    }
+    res.status(200).json({
+      success: true,
+      item,
     });
+
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    next(error);
+  }
+
+
 });
 
 //Get Single Sub Item ---Get
@@ -173,21 +189,19 @@ exports.getSingleSubItem = asyncHandler(async (req, res, next) => {
     let itemId = req.params.id;
     const item = await SubSectionItem.findById(itemId);
     if (!item) {
-      return res.status(400).json({
-        success: false,
-        message: "Item is not found with this id",
-      });
+      const error = new Error('SubSection Item Not Found')
+      error.statusCode = 404
+      throw error
     }
     res.status(200).json({
       success: true,
       item,
     });
   } catch (err) {
-    res.status(400).json({
-      success: false,
-      message: "Error occured while trying to get item",
-      error: err,
-    });
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
   }
 });
 
@@ -197,65 +211,64 @@ exports.deleteSubItemById = asyncHandler(async (req, res, next) => {
   try {
     let item = await SubSectionItem.findById(itemId);
     if (!item) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid Id",
-      });
+      const error = new Error('SubSection Item Not Found')
+      error.statusCode = 404
+      throw error
     }
     await item.remove();
     res.status(200).json({
       success: true,
-      message: "Item deleted successfully",
+      message: "SubSection Item deleted successfully",
     });
   } catch (err) {
-    return res.status(500).json({
-      success: false,
-      message: "Error deleting item",
-      error: err,
-    });
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
   }
 });
 
 //Delete All Sub Item
 exports.deleteAllSubItem = asyncHandler(async (req, res, next) => {
-  let item;
   try {
-    item = await SubSectionItem.deleteMany();
+    await SubSectionItem.deleteMany();
     res.status(200).json({
       success: true,
-      message: "All Item Deleted Successfully",
+      message: "All Sub Section Item Deleted Successfully",
     });
   } catch (err) {
-    res.status(400).json({
-      success: false,
-      message: err.message,
-    });
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
   }
 });
 
 //Update Sub Item By Id
 exports.updateSubItem = asyncHandler(async (req, res, next) => {
-  let item = await SubSectionItem.findById(req.params.id);
-  if (!item) {
-    return res.status(400).json({
-      success: false,
-      message: "Invalid Id",
-    });
-  }
+
   try {
+    let item
+    item = await SubSectionItem.findById(req.params.id);
+    if (!item) {
+      const error = new Error('SubSection Item Not Found')
+      error.statusCode = 404
+      throw error
+    }
     item = await SubSectionItem.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
       useUnified: false,
     });
-  } catch (err) {
-    return res.status(400).json({
-      success: false,
-      message: err.message,
+    res.status(200).json({
+      success: true,
+      item,
     });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
   }
-  res.status(200).json({
-    success: true,
-    item,
-  });
+
 });
