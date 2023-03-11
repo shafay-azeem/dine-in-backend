@@ -24,6 +24,7 @@ const cart = require("./routes/CartRoutes");
 const payment = require("./routes/PaymentRoutes");
 
 const table = require("./routes/TableRoutes");
+const { notFound } = require("./middleware/errorMiddleware");
 
 app.use("/api/menu/V1", menu);
 

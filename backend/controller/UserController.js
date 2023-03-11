@@ -79,94 +79,109 @@ exports.loginUser = asyncHandler(async (req, res, next) => {
 
 //Forgot Password --Post
 exports.forgotPassword = asyncHandler(async (req, res, next) => {
-  const user = await User.findOne({ email: req.body.email });
-
-  if (!user) {
-    return res.status(404).json({
-      success: false,
-      message: "USER is not found with this email",
-    });
-  }
-
-  const resetToken = user.getResetToken();
-
-  await user.save({
-    validateBeforeSave: false,
-  });
-
-  const resetPasswordUrl = `${req.protocol}://${req.get(
-    "host"
-  )}/password/reset/${resetToken}`;
-
-  const message = `Your password reset token is : \n\n ${resetPasswordUrl}`;
-
   try {
-    await sendMail({
-      email: user.email,
-      subject: `Ecommerce Password Recovery`,
-      message,
-    });
+    const user = await User.findOne({ email: req.body.email });
+    if (!user) {
+      const error = new Error('User is not found with this email')
+      error.statusCode = 404
+      throw error
+    }
 
-    res.status(200).json({
-      success: true,
-      message: `Email sent to ${user.email} succesfully`,
-    });
-  } catch (error) {
-    user.resetPasswordToken = undefined;
-    user.resetPasswordTime = undefined;
-
+    const resetToken = user.getResetToken();
     await user.save({
       validateBeforeSave: false,
     });
 
-    return res.status(404).json({
-      success: false,
-      message: error.message,
-    });
+    const resetPasswordUrl = `${req.protocol}://${req.get(
+      "host"
+    )}/password/reset/${resetToken}`;
+
+    const message = `Your password reset token is : \n\n ${resetPasswordUrl}`;
+
+    try {
+      await sendMail({
+        email: user.email,
+        subject: `Ecommerce Password Recovery`,
+        message,
+      });
+
+      res.status(200).json({
+        success: true,
+        message: `Email sent to ${user.email} succesfully`,
+      });
+    } catch (err) {
+      user.resetPasswordToken = undefined;
+      user.resetPasswordTime = undefined;
+      await user.save({
+        validateBeforeSave: false,
+      });
+      const error = new Error(`${err.message}`)
+      error.statusCode = 404
+      throw error
+    }
+
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500
+    }
+    next(err)
   }
+
 });
+
+
 
 //Reset Password --Post
 exports.resetPassword = asyncHandler(async (req, res, next) => {
-  //Create Token Hash
-  const resetPasswordToken = crypto
-    .createHash("sha256")
-    .update(req.params.token)
-    .digest("hex");
 
-  const user = await User.findOne({
-    resetPasswordToken,
-    resetPasswordTime: { $gt: Date.now() },
-  });
-  // console.log(user, "uuser");
+  try {
 
-  if (!user) {
-    return res.status(400).json({
-      success: false,
-      message: `Reset password url is invalid or has been expired`,
+    //Create Token Hash
+    const resetPasswordToken = crypto
+      .createHash("sha256")
+      .update(req.params.token)
+      .digest("hex");
+
+    const user = await User.findOne({
+      resetPasswordToken,
+      resetPasswordTime: { $gt: Date.now() },
     });
+
+
+    if (!user) {
+      const error = new Error('Reset password url is invalid or has been expired')
+      error.statusCode = 422
+      throw error
+
+    }
+
+    if (req.body.password !== req.body.confirmPassword) {
+      const error = new Error('Password Must be same in Both Fields')
+      error.statusCode = 400
+      throw error
+    }
+
+    user.password = req.body.password;
+
+    user.resetPasswordToken = undefined;
+    user.resetPasswordTime = undefined;
+
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      user,
+    });
+
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500
+    }
+    next(err)
   }
 
-  if (req.body.password !== req.body.confirmPassword) {
-    return res.status(400).json({
-      success: false,
-      message: `Password Must be same in Both Fields`,
-    });
-  }
-
-  user.password = req.body.password;
-
-  user.resetPasswordToken = undefined;
-  user.resetPasswordTime = undefined;
-
-  await user.save();
-
-  // sendToken(user, 200, res);
-  return res.status(200).json({
-    success: true,
-    user,
-  });
 });
+
 
 //Update User --Post
 exports.updateProfile = asyncHandler(async (req, res, next) => {
@@ -175,11 +190,7 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
     email: req.body.email,
     resName: req.body.resName,
     resImage: req.body.resImage,
-
-
-
   };
-
   try {
     const user = await User.findByIdAndUpdate(req.user.id, newUserData, {
       new: true,
@@ -190,74 +201,85 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
       success: true,
       user,
     });
-  } catch (error) {
-    return res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500
+    }
+    next(err)
   }
 });
 
 //Delete User --Post
 exports.deleteUser = asyncHandler(async (req, res, next) => {
-  const user = await User.findById(req.params.id);
-  if (!user) {
-    return res.status(400).json({
-      success: false,
-      message: "User is not found with this id",
-    });
-  }
   try {
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+      const error = new Error('User is not found with this id')
+      error.statusCode = 404
+      throw error
+    }
+
     await user.remove();
     res.status(200).json({
       success: true,
       message: "User deleted successfully",
     });
   } catch (error) {
-    return res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    if (!err.statusCode) {
+      err.statusCode = 500
+    }
+    next(err)
   }
+
 });
 
 //Get All Users --Get
 exports.getAllUsers = asyncHandler(async (req, res, next) => {
-  const users = await User.find().catch((err) => {
-    return res.status(400).json({
-      success: false,
-      message: err.message,
+  ///To execute the query and retrieve the result set, you can call the exec() method on the Query object. The exec() method returns a Promise that resolves with an array of documents that match the query criteria.
+
+  try {
+    const users = await User.find().exec()
+    if (!users) {
+      const error = new Error('Users Not Found')
+      error.statusCode = 404
+      throw error
+    }
+    res.status(200).json({
+      success: true,
+      users,
     });
-  });
-  if (!users) {
-    return res.status(404).json({
-      success: false,
-      message: "Users not found",
-    });
+
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+
   }
-  res.status(200).json({
-    success: true,
-    users,
-  });
 });
 
 //Delete All Users
 exports.deleteAllUsers = asyncHandler(async (req, res, next) => {
-  let users;
   try {
+    let users;
     users = await User.deleteMany();
     res.status(200).json({
       success: true,
       message: "All Users Deleted Successfully",
     });
   } catch (error) {
-    return res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+
   }
 });
 
+
+//NOT IN USE
 //User Detail --Get
 exports.userDetail = asyncHandler(async (req, res, next) => {
   const token = req.headers.authorization.split(" ")[1];
@@ -306,6 +328,8 @@ exports.userDetail = asyncHandler(async (req, res, next) => {
   });
 });
 
+
+//NOT IN USE
 //Logout User --Get
 exports.logout = asyncHandler(async (req, res, next) => {
   //console.log(process.env.JWT_SECRET_KEY);
@@ -331,16 +355,21 @@ exports.logout = asyncHandler(async (req, res, next) => {
 
 exports.getuserDetailById = asyncHandler(async (req, res, next) => {
   const userId = req.params.userId
-
-  const user = await User.findById(new mongoose.Types.ObjectId(userId))
-  if (!user) {
-    return res.status(404).json({
-      success: false,
-      message: "User Not Found",
+  try {
+    const user = await User.findById(new mongoose.Types.ObjectId(userId))
+    if (!user) {
+      const error = new Error('User Not Found')
+      error.statusCode = 404
+      throw error
+    }
+    res.status(200).json({
+      success: true,
+      user: user
     });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err)
   }
-  res.status(200).json({
-    success: true,
-    user: user
-  });
 })
