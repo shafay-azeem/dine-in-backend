@@ -56,14 +56,14 @@ exports.getAllSectionByMenuIdQr = async (req, res, next) => {
     let section = await Section.find({
       menuId: { $in: menuId },
       sectionStatus: true,
-    }).exec()
+    })
       .populate("item")
       .populate({
         path: "subSection", // populate subsectionsection
         populate: {
           path: "item", // in section, populate item
         },
-      })
+      }).exec()
 
     if (!section) {
       const error = new Error('Section Not Found')
