@@ -17,25 +17,26 @@ exports.createModifier = asyncHandler(async (req, res, next) => {
       message: "Modifier Created Successfully",
       modifier,
     });
-  } catch (error) {
-    console.log(error);
-    res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
   }
 });
 
+
 //Update Modifier By Id
 exports.updateModifier = asyncHandler(async (req, res, next) => {
-  let modifier = await Modifier.findById(req.params.id);
+
 
   try {
+    let modifier
+    modifier = await Modifier.findById(req.params.id);
     if (!modifier) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid Id",
-      });
+      const error = new Error('Modifier  Not Found')
+      error.statusCode = 404
+      throw error
     }
     modifier = await Modifier.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
@@ -48,24 +49,22 @@ exports.updateModifier = asyncHandler(async (req, res, next) => {
       modifier,
     });
   } catch (err) {
-    return res.status(500).json({
-      success: false,
-      message: "Error while updating modifier. Please try again later.",
-      error: err.message,
-    });
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
   }
 });
 
 //Delete Modifier By Id
 exports.deleteModifierById = asyncHandler(async (req, res, next) => {
-  let modifier;
   try {
+    let modifier;
     modifier = await Modifier.findById(req.params.id);
     if (!modifier) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid Id",
-      });
+      const error = new Error('Modifier Not Found')
+      error.statusCode = 404
+      throw error
     }
 
     await modifier.remove();
@@ -75,25 +74,24 @@ exports.deleteModifierById = asyncHandler(async (req, res, next) => {
       message: "Modifier deleted successfully",
     });
   } catch (err) {
-    return res.status(500).json({
-      success: false,
-      message: "Error while deleting modifier. Please try again later.",
-      error: err.message,
-    });
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
   }
 });
 
 //Get Single Modifier By Id ---Get
 exports.getSingleModifer = asyncHandler(async (req, res, next) => {
-  let modifierId = req.params.id;
   try {
+    let modifierId = req.params.id;
     const modifier = await Modifier.findById(modifierId);
 
     if (!modifier) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid Id",
-      });
+      const error = new Error('Modifier  Not Found')
+      error.statusCode = 404
+      throw error
+
     }
 
     res.status(200).json({
@@ -101,51 +99,54 @@ exports.getSingleModifer = asyncHandler(async (req, res, next) => {
       modifier,
     });
   } catch (err) {
-    return res.status(500).json({
-      success: false,
-      message: "Error while fetching modifier. Please try again later.",
-      error: err.message,
-    });
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
   }
 });
 
 //Get All Modifier ---Get
 exports.getAllModifier = asyncHandler(async (req, res, next) => {
   try {
-    const modifier = await Modifier.find({ userId: { $in: req.user.id } });
+    const modifier = await Modifier.find({ userId: { $in: req.user.id } }).exec();
+    if (!modifier) {
+      const error = new Error('Modifier Not Found')
+      error.statusCode = 404
+      throw error
+    }
 
     res.status(200).json({
       success: true,
       modifier,
     });
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      error: error.message,
-    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
   }
 });
 
 //Delete All Menu
 exports.deleteAllModifiers = asyncHandler(async (req, res, next) => {
-  let modifier = await Modifier.deleteMany();
+
 
   try {
+    let modifier = await Modifier.deleteMany();
     if (!modifier) {
-      return res.status(400).json({
-        success: false,
-        message: "No modifier found",
-      });
+      const error = new Error('Modifier Not Found')
+      error.statusCode = 404
+      throw error
     }
     res.status(200).json({
       success: true,
       message: "All Modifier Deleted Successfully",
     });
   } catch (err) {
-    return res.status(500).json({
-      success: false,
-      message: "Error while deleting modifier. Please try again later.",
-      error: err.message,
-    });
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
   }
 });
