@@ -27,6 +27,6 @@ router.route("/deleteUser/:id").delete(isAuthenticatedUser, deleteUser);
 router.route("/deleteAllUsers").delete(deleteAllUsers);
 router.route("/logout").post(isAuthenticatedUser, logout);
 
-router.route("/getuserDetailById/:userId").get(getuserDetailById);
+router.route("/getuserDetailById/:resUserName").get(getuserDetailById);
 
 module.exports = router;
