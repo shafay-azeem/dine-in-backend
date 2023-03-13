@@ -21,6 +21,7 @@ exports.createUser = asyncHandler(async (req, res, next) => {
       email,
       password,
       resName,
+      resUserName,
       resImage
     });
     return res.status(201).json({
