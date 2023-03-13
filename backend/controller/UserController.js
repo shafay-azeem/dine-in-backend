@@ -9,19 +9,24 @@ const asyncHandler = require("express-async-handler");
 exports.createUser = asyncHandler(async (req, res, next) => {
   const { name, email, password, resName, resUserName, resImage } = req.body;
   try {
-    let user
-    user = await User.findOne({ $or: [{ email: email }, { resUserName: resUserName }] })
+    let user;
+    user = await User.findOne({
+      $or: [{ email: email }, { resUserName: resUserName }],
+    });
     if (user) {
-      const error = new Error('User Already Exist with this Email or Your ResName is already taken')
-      error.statusCode = 400
-      throw error
+      const error = new Error(
+        "User Already Exist with this Email or Your ResName is already taken"
+      );
+      error.statusCode = 400;
+      throw error;
     }
     user = await User.create({
       name,
       email,
       password,
       resName,
-      resImage
+      resUserName,
+      resImage,
     });
     return res.status(201).json({
       success: true,
@@ -31,35 +36,32 @@ exports.createUser = asyncHandler(async (req, res, next) => {
     });
   } catch (err) {
     if (!err.statusCode) {
-      err.statusCode = 500
+      err.statusCode = 500;
     }
-    next(err)
+    next(err);
   }
 });
-
-
 
 //login --Post
 exports.loginUser = asyncHandler(async (req, res, next) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
-      const error = new Error('Please Enter Your All Fields')
-      error.statusCode = 422
-      throw error
-
+      const error = new Error("Please Enter Your All Fields");
+      error.statusCode = 422;
+      throw error;
     }
     const user = await User.findOne({ email }).select("+password");
     if (!user) {
-      const error = new Error('User is not found with this email')
-      error.statusCode = 401
-      throw error
+      const error = new Error("User is not found with this email");
+      error.statusCode = 401;
+      throw error;
     }
     const isPasswordMatched = await user.comparePassword(password);
     if (!isPasswordMatched) {
-      const error = new Error('Password is in correct')
-      error.statusCode = 401
-      throw error
+      const error = new Error("Password is in correct");
+      error.statusCode = 401;
+      throw error;
     }
     return res.status(200).json({
       success: true,
@@ -69,22 +71,20 @@ exports.loginUser = asyncHandler(async (req, res, next) => {
     });
   } catch (err) {
     if (!err.statusCode) {
-      err.statusCode = 500
+      err.statusCode = 500;
     }
-    next(err)
+    next(err);
   }
 });
-
-
 
 //Forgot Password --Post
 exports.forgotPassword = asyncHandler(async (req, res, next) => {
   try {
     const user = await User.findOne({ email: req.body.email });
     if (!user) {
-      const error = new Error('User is not found with this email')
-      error.statusCode = 404
-      throw error
+      const error = new Error("User is not found with this email");
+      error.statusCode = 404;
+      throw error;
     }
 
     const resetToken = user.getResetToken();
@@ -115,27 +115,21 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
       await user.save({
         validateBeforeSave: false,
       });
-      const error = new Error(`${err.message}`)
-      error.statusCode = 404
-      throw error
+      const error = new Error(`${err.message}`);
+      error.statusCode = 404;
+      throw error;
     }
-
   } catch (err) {
     if (!err.statusCode) {
-      err.statusCode = 500
+      err.statusCode = 500;
     }
-    next(err)
+    next(err);
   }
-
 });
-
-
 
 //Reset Password --Post
 exports.resetPassword = asyncHandler(async (req, res, next) => {
-
   try {
-
     //Create Token Hash
     const resetPasswordToken = crypto
       .createHash("sha256")
@@ -147,18 +141,18 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
       resetPasswordTime: { $gt: Date.now() },
     });
 
-
     if (!user) {
-      const error = new Error('Reset password url is invalid or has been expired')
-      error.statusCode = 422
-      throw error
-
+      const error = new Error(
+        "Reset password url is invalid or has been expired"
+      );
+      error.statusCode = 422;
+      throw error;
     }
 
     if (req.body.password !== req.body.confirmPassword) {
-      const error = new Error('Password Must be same in Both Fields')
-      error.statusCode = 400
-      throw error
+      const error = new Error("Password Must be same in Both Fields");
+      error.statusCode = 400;
+      throw error;
     }
 
     user.password = req.body.password;
@@ -172,16 +166,13 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
       success: true,
       user,
     });
-
   } catch (err) {
     if (!err.statusCode) {
-      err.statusCode = 500
+      err.statusCode = 500;
     }
-    next(err)
+    next(err);
   }
-
 });
-
 
 //Update User --Post
 exports.updateProfile = asyncHandler(async (req, res, next) => {
@@ -200,12 +191,11 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
       success: true,
       user,
     });
-
   } catch (err) {
     if (!err.statusCode) {
-      err.statusCode = 500
+      err.statusCode = 500;
     }
-    next(err)
+    next(err);
   }
 });
 
@@ -215,9 +205,9 @@ exports.deleteUser = asyncHandler(async (req, res, next) => {
     const user = await User.findById(req.params.id);
 
     if (!user) {
-      const error = new Error('User is not found with this id')
-      error.statusCode = 404
-      throw error
+      const error = new Error("User is not found with this id");
+      error.statusCode = 404;
+      throw error;
     }
 
     await user.remove();
@@ -227,11 +217,10 @@ exports.deleteUser = asyncHandler(async (req, res, next) => {
     });
   } catch (error) {
     if (!err.statusCode) {
-      err.statusCode = 500
+      err.statusCode = 500;
     }
-    next(err)
+    next(err);
   }
-
 });
 
 //Get All Users --Get
@@ -239,23 +228,21 @@ exports.getAllUsers = asyncHandler(async (req, res, next) => {
   ///To execute the query and retrieve the result set, you can call the exec() method on the Query object. The exec() method returns a Promise that resolves with an array of documents that match the query criteria.
 
   try {
-    const users = await User.find().exec()
+    const users = await User.find().exec();
     if (!users) {
-      const error = new Error('Users Not Found')
-      error.statusCode = 404
-      throw error
+      const error = new Error("Users Not Found");
+      error.statusCode = 404;
+      throw error;
     }
     res.status(200).json({
       success: true,
       users,
     });
-
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
     }
     next(err);
-
   }
 });
 
@@ -273,10 +260,8 @@ exports.deleteAllUsers = asyncHandler(async (req, res, next) => {
       err.statusCode = 500;
     }
     next(err);
-
   }
 });
-
 
 //NOT IN USE
 //User Detail --Get
@@ -327,7 +312,6 @@ exports.userDetail = asyncHandler(async (req, res, next) => {
   });
 });
 
-
 //NOT IN USE
 //Logout User --Get
 exports.logout = asyncHandler(async (req, res, next) => {
@@ -350,47 +334,44 @@ exports.logout = asyncHandler(async (req, res, next) => {
   );
 });
 
-
-
 exports.getuserDetailByresUserName = asyncHandler(async (req, res, next) => {
-  const resUserName = req.params.resUserName
+  const resUserName = req.params.resUserName;
   try {
-    const user = await User.findOne({ resUserName: resUserName })
+    const user = await User.findOne({ resUserName: resUserName });
     if (!user) {
-      const error = new Error('User Not Found')
-      error.statusCode = 404
-      throw error
+      const error = new Error("User Not Found");
+      error.statusCode = 404;
+      throw error;
     }
     res.status(200).json({
       success: true,
-      user: user
+      user: user,
     });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
     }
-    next(err)
+    next(err);
   }
-})
-
+});
 
 exports.getuserDetailById = asyncHandler(async (req, res, next) => {
-  const userId = req.params.userId
+  const userId = req.params.userId;
   try {
-    const user = await User.findById(new mongoose.Types.ObjectId(userId))
+    const user = await User.findById(new mongoose.Types.ObjectId(userId));
     if (!user) {
-      const error = new Error('User Not Found')
-      error.statusCode = 404
-      throw error
+      const error = new Error("User Not Found");
+      error.statusCode = 404;
+      throw error;
     }
     res.status(200).json({
       success: true,
-      user: user
+      user: user,
     });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
     }
-    next(err)
+    next(err);
   }
-})
+});
