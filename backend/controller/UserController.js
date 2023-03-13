@@ -7,12 +7,12 @@ const asyncHandler = require("express-async-handler");
 
 //SignUp User --Post
 exports.createUser = asyncHandler(async (req, res, next) => {
-  const { name, email, password, resName, resImage } = req.body;
+  const { name, email, password, resName, resUserName, resImage } = req.body;
   try {
     let user
-    user = await User.findOne({ email: email })
+    user = await User.findOne({ $or: [{ email: email }, { resUserName: resUserName }] })
     if (user) {
-      const error = new Error('User Already Exist with this Email')
+      const error = new Error('User Already Exist with this Email or Your ResName is already taken')
       error.statusCode = 400
       throw error
     }
@@ -187,7 +187,6 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
 exports.updateProfile = asyncHandler(async (req, res, next) => {
   const newUserData = {
     name: req.body.name,
-    email: req.body.email,
     resName: req.body.resName,
     resImage: req.body.resImage,
   };
