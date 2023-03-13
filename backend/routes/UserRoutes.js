@@ -11,6 +11,7 @@ const {
   userDetail,
   logout,
   getuserDetailById,
+  getuserDetailByresUserName,
 } = require("../controller/UserController");
 const { isAuthenticatedUser } = require("../middleware/auth");
 const router = express.Router();
@@ -27,6 +28,7 @@ router.route("/deleteUser/:id").delete(isAuthenticatedUser, deleteUser);
 router.route("/deleteAllUsers").delete(deleteAllUsers);
 router.route("/logout").post(isAuthenticatedUser, logout);
 
-router.route("/getuserDetailById/:resUserName").get(getuserDetailById);
+router.route("/getuserDetailById/:userId").get(getuserDetailById);
+router.route("/getuserDetailById/:resUserName").get(getuserDetailByresUserName);
 
 module.exports = router;
