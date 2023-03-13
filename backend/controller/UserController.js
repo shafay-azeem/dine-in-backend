@@ -353,9 +353,9 @@ exports.logout = asyncHandler(async (req, res, next) => {
 
 
 exports.getuserDetailById = asyncHandler(async (req, res, next) => {
-  const userId = req.params.userId
+  const resUserName = req.params.resUserName
   try {
-    const user = await User.findById(new mongoose.Types.ObjectId(userId))
+    const user = await User.findOne({ resUserName: resUserName })
     if (!user) {
       const error = new Error('User Not Found')
       error.statusCode = 404
