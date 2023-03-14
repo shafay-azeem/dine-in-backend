@@ -100,3 +100,31 @@ exports.getTableCountbyUserId = asyncHandler(async (req, res, next) => {
         next(error)
     }
 });
+
+
+//-----------------------------------------------------------------
+exports.deleteTableDeleteByTableId = asyncHandler(async (req, res, next) => {
+    try {
+        let tableId = req.params.tableId
+        let tablesCount = await Table.findOne({ userId: { $in: req.user.id } });
+        if (!tablesCount) {
+            const error = new Error('Table not found')
+            error.statusCode = 404
+            throw error // it will end up in catch block followed by next thats why throw is used in async code
+        }
+        let index = await tablesCount.Table.findIndex((table) => table._id == tableId)
+        tablesCount.Table.pull(index)
+        await tablesCount.save();
+
+        res.status(200).json({
+            success: true,
+            message: "Table Deleted Successfully",
+
+        });
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = 500
+        }
+        next(error)
+    }
+});
