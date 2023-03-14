@@ -53,6 +53,8 @@ exports.tableCreate = asyncHandler(async (req, res, next) => {
     }
 });
 
+//--------------------------------------
+
 exports.getTablebyUserId = asyncHandler(async (req, res, next) => {
 
     try {
@@ -75,6 +77,8 @@ exports.getTablebyUserId = asyncHandler(async (req, res, next) => {
     }
 });
 
+
+//--------------------------------------
 exports.getTableCountbyUserId = asyncHandler(async (req, res, next) => {
     try {
         let tablesCount = await Table.findOne({ userId: { $in: req.user.id } });
