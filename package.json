@@ -5,7 +5,10 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon backend/server.js"
+    "start": "nodemon backend/server.js",
+    "dine-in": "npm start --prefix dine-in",
+    "dev": "concurrently \"npm run server\" \"npm run dine-in\"",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix dine-in && npm run build --prefix dine-in"
   },
   "author": "",
   "license": "ISC",
