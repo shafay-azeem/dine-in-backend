@@ -10,7 +10,7 @@ exports.tableCreate = asyncHandler(async (req, res, next) => {
         } else {
             table = await Table.findOne({ userId: { $in: req.user.id } });
 
-            if (table) {
+            if (!table) {
                 const tables = [];
                 for (let i = 1; i <= tablesCount; i++) {
                     const table = {
@@ -25,7 +25,16 @@ exports.tableCreate = asyncHandler(async (req, res, next) => {
                     Table: tables,
                 });
             } else {
-                table.TableNumber = tablesCount
+                const tables = [];
+                for (let i = 1; i <= tablesCount; i++) {
+                    const table = {
+                        TableNumber: i,
+                        TableName: "A-" + i,
+                    };
+
+                    tables.push(table);
+                }
+                table.Table = tables
             }
 
             await table.save();
