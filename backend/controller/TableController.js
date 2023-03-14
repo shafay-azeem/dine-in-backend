@@ -112,8 +112,8 @@ exports.deleteTableDeleteByTableId = asyncHandler(async (req, res, next) => {
             error.statusCode = 404
             throw error // it will end up in catch block followed by next thats why throw is used in async code
         }
-        let index = await tablesCount.Table.findIndex((table) => table._id == tableId)
-        tablesCount.Table.pull(index)
+        let table = tablesCount.Table.find((table) => table._id.toString() === tableId.toString())
+        tablesCount.Table.pull(table._id)
         await tablesCount.save();
 
         res.status(200).json({
