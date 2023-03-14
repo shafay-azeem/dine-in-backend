@@ -94,7 +94,7 @@ exports.getTableCountbyUserId = asyncHandler(async (req, res, next) => {
             error.statusCode = 404
             throw error // it will end up in catch block followed by next thats why throw is used in async code
         }
-        let count = tablesCount.Table.length()
+        let count = tablesCount.Table.length
         res.status(200).json({
             success: true,
             message: "Table Count Get Successfully",
