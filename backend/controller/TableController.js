@@ -62,21 +62,10 @@ exports.getTablebyUserId = asyncHandler(async (req, res, next) => {
             error.statusCode = 404
             throw error // it will end up in catch block followed by next thats why throw is used in async code
         }
-        let count = tablesCount.TableNumber;
-        const tables = [];
-        for (let i = 1; i <= count; i++) {
-            const table = {
-                userId: req.user._id,
-                TableNumber: i,
-            };
-
-            tables.push(table);
-        }
-
         res.status(200).json({
             success: true,
             message: "Tables Get Successfully",
-            tables: tables,
+            tables: tablesCount,
         });
     } catch (error) {
         if (!error.statusCode) {
