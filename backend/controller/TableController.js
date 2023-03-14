@@ -10,10 +10,19 @@ exports.tableCreate = asyncHandler(async (req, res, next) => {
         } else {
             table = await Table.findOne({ userId: { $in: req.user.id } });
 
-            if (!table) {
+            if (table) {
+                const tables = [];
+                for (let i = 1; i <= count; i++) {
+                    const table = {
+                        TableNumber: i,
+                        TableName: "A-" + i,
+                    };
+
+                    tables.push(table);
+                }
                 table = new Table({
                     userId: req.user._id,
-                    TableNumber: tablesCount,
+                    Table: tables,
                 });
             } else {
                 table.TableNumber = tablesCount
@@ -25,6 +34,7 @@ exports.tableCreate = asyncHandler(async (req, res, next) => {
         res.status(201).json({
             success: true,
             message: "Tables Rigesterd Successfully",
+            table
         });
     } catch (error) {
         if (!error.statusCode) {

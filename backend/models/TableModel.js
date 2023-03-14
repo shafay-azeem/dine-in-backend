@@ -6,10 +6,16 @@ const tableSchema = new mongoose.Schema({
         type: mongoose.Schema.ObjectId,
         ref: "User",
     },
-    TableNumber: {
-        type: Number,
-        required: true
-    }
+    Table: [{
+        TableNumber: {
+            type: Number,
+            required: true
+        },
+        TableName: {
+            type: Number,
+            required: true
+        }
+    }]
 });
 
 const Table = mongoose.model('Table', tableSchema);
