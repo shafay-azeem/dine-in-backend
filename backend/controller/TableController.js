@@ -12,7 +12,7 @@ exports.tableCreate = asyncHandler(async (req, res, next) => {
 
             if (table) {
                 const tables = [];
-                for (let i = 1; i <= count; i++) {
+                for (let i = 1; i <= tablesCount; i++) {
                     const table = {
                         TableNumber: i,
                         TableName: "A-" + i,
