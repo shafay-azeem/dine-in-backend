@@ -12,7 +12,7 @@ const tableSchema = new mongoose.Schema({
             required: true
         },
         TableName: {
-            type: Number,
+            type: String,
             required: true
         }
     }]
