@@ -7,7 +7,7 @@ const asyncHandler = require("express-async-handler");
 
 //SignUp User --Post
 exports.createUser = asyncHandler(async (req, res, next) => {
-  const { name, email, password, resName, resUserName, resImage } = req.body;
+  const { name, email, password, resName, resUserName, resImage, currencySymbol } = req.body;
   try {
     let user;
     user = await User.findOne({
@@ -27,6 +27,7 @@ exports.createUser = asyncHandler(async (req, res, next) => {
       resName,
       resUserName,
       resImage,
+      currencySymbol
     });
     return res.status(201).json({
       success: true,
@@ -180,6 +181,7 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
     name: req.body.name,
     resName: req.body.resName,
     resImage: req.body.resImage,
+    currencySymbol: req.body.currencySymbol,
   };
   try {
     const user = await User.findByIdAndUpdate(req.user.id, newUserData, {

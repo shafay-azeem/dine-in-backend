@@ -22,6 +22,9 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
   },
+  currencySymbol: {
+    type: String,
+  },
   createAt: {
     type: Date,
     default: Date.now(),

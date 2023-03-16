@@ -14,7 +14,7 @@ const sectionSchema = new mongoose.Schema({
     type: String,
   },
   sectionNote: {
-    type: Number,
+    type: String,
   },
   sectionLabel: [
     {
