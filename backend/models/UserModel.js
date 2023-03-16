@@ -23,7 +23,18 @@ const userSchema = new mongoose.Schema({
     type: String,
   },
   currencySymbol: {
-    type: String,
+    symbol: {
+      type: String,
+    },
+    label: {
+      type: String,
+    },
+    code: {
+      type: String,
+    },
+    name_plural: {
+      type: String,
+    },
   },
   createAt: {
     type: Date,
