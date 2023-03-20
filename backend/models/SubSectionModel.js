@@ -16,10 +16,10 @@ const subSectionSchema = new mongoose.Schema({
   },
   sectionLabel: [
     {
-      Name: {
+      label: {
         type: String,
       },
-      Signature: {
+      value: {
         type: String,
       },
     },

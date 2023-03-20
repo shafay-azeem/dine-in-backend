@@ -31,13 +31,10 @@ const itemSchema = new mongoose.Schema({
   },
   itemLabel: [
     {
-      New: {
+      label: {
         type: String,
       },
-      Signature: {
-        type: String,
-      },
-      Special_Presentation: {
+      value: {
         type: String,
       },
     },
@@ -47,10 +44,10 @@ const itemSchema = new mongoose.Schema({
   },
   itemWarning: [
     {
-      Alcohol: {
+      label: {
         type: String,
       },
-      AlcoholFree: {
+      value: {
         type: String,
       },
     },

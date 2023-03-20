@@ -31,13 +31,10 @@ const subSectionItemSchema = new mongoose.Schema({
   },
   itemLabel: [
     {
-      New: {
+      label: {
         type: String,
       },
-      Signature: {
-        type: String,
-      },
-      Special_Presentation: {
+      value: {
         type: String,
       },
     },
