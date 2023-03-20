@@ -273,9 +273,11 @@ exports.revenueRange = asyncHandler(async (req, res) => {
             totalRevenue,
           });
         } else {
-          const error = new Error('No revenue on entered date')
-          error.statusCode = 404
-          throw error
+          let totalRevenue = 0
+          res.status(200).json({
+            success: true,
+            totalRevenue,
+          });
         }
       }
     });
