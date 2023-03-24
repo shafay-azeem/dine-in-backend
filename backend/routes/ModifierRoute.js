@@ -26,7 +26,7 @@ router.route("/updateModifier/:id").put(isAuthenticatedUser, updateModifier);
 
 
 
-router.route("/createLabel").put(isAuthenticatedUser, createLabel);
+router.route("/createLabel").post(isAuthenticatedUser, createLabel);
 
 router.route("/deleteAllModifiers").delete(deleteAllModifiers);
 
