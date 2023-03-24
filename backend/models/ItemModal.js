@@ -37,6 +37,9 @@ const itemSchema = new mongoose.Schema({
       value: {
         type: String,
       },
+      svg: {
+        type: String,
+      }
     },
   ],
   itemRecommendedItems: {
