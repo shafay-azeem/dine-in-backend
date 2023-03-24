@@ -48,7 +48,7 @@ exports.updateLabel = asyncHandler(async (req, res, next) => {
             throw error
         }
         let newBody = await label.itemLabel.filter((element) => {
-            element._id === labelId
+            element._id == labelId
         })
         newBody = labelData
         await label.save()
