@@ -36,7 +36,7 @@ exports.createLabel = asyncHandler(async (req, res, next) => {
 });
 
 
-//Update Modifier By Id
+//Update Label By Id
 exports.updateLabel = asyncHandler(async (req, res, next) => {
     const labelId = req.params.labelId;
     const labelData = req.body;
@@ -67,7 +67,9 @@ exports.updateLabel = asyncHandler(async (req, res, next) => {
         next(err);
     }
 });
-//Delete Modifier By Id
+
+
+//Delete Labels By Id
 exports.deleteLabel = asyncHandler(async (req, res, next) => {
     let labelId = req.params.labelId
     try {
@@ -90,22 +92,30 @@ exports.deleteLabel = asyncHandler(async (req, res, next) => {
         next(err);
     }
 });
+
+
+
 //Get Single Modifier By Id ---Get
-exports.getSingleModifer = asyncHandler(async (req, res, next) => {
+exports.getSingleLabel = asyncHandler(async (req, res, next) => {
+    const labelId = req.params.labelId;
     try {
-        let modifierId = req.params.id;
-        const modifier = await Modifier.findById(modifierId);
-
-        if (!modifier) {
-            const error = new Error('Modifier  Not Found')
-            error.statusCode = 404
-            throw error
-
+        const label = await Label.findOne({ userId: { $in: req.user.id } }).exec();
+        if (!label) {
+            const error = new Error('Label not found');
+            error.statusCode = 404;
+            throw error;
+        }
+        const itemLabel = label.itemLabel.find((element) => element._id == labelId);
+        if (!itemLabel) {
+            const error = new Error('Label item not found');
+            error.statusCode = 404;
+            throw error;
         }
 
         res.status(200).json({
             success: true,
-            modifier,
+            message: "Item Label fetched successfully",
+            itemLabel
         });
     } catch (err) {
         if (!err.statusCode) {
@@ -115,7 +125,7 @@ exports.getSingleModifer = asyncHandler(async (req, res, next) => {
     }
 });
 
-//Get All Modifier ---Get
+//Get All Label ---Get
 exports.getLabels = asyncHandler(async (req, res, next) => {
     try {
         const label = await Label.findOne({ userId: { $in: req.user.id } }).exec();
@@ -136,25 +146,3 @@ exports.getLabels = asyncHandler(async (req, res, next) => {
     }
 });
 
-//Delete All Menu
-exports.deleteAllModifiers = asyncHandler(async (req, res, next) => {
-
-
-    try {
-        let modifier = await Modifier.deleteMany();
-        if (!modifier) {
-            const error = new Error('Modifier Not Found')
-            error.statusCode = 404
-            throw error
-        }
-        res.status(200).json({
-            success: true,
-            message: "All Modifier Deleted Successfully",
-        });
-    } catch (err) {
-        if (!err.statusCode) {
-            err.statusCode = 500;
-        }
-        next(err);
-    }
-});

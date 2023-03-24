@@ -1,5 +1,5 @@
 const express = require("express");
-const { createLabel, getLabels, deleteLabel, updateLabel } = require("../controller/LabelController");
+const { createLabel, getLabels, deleteLabel, updateLabel, getSingleLabel } = require("../controller/LabelController");
 const {
   createModifier,
   deleteModifierById,
@@ -30,7 +30,6 @@ router.route("/createLabel").post(isAuthenticatedUser, createLabel);
 router.route("/getLabels").get(isAuthenticatedUser, getLabels);
 router.route("/deleteLabel/:labelId").delete(isAuthenticatedUser, deleteLabel);
 router.route("/updateLabel/:labelId").put(isAuthenticatedUser, updateLabel);
-
-
+router.route("/getSingleLabel/:labelId").get(isAuthenticatedUser, getSingleLabel);
 
 module.exports = router;
