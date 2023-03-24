@@ -37,26 +37,25 @@ exports.createLabel = asyncHandler(async (req, res, next) => {
 
 
 //Update Modifier By Id
-exports.updateModifier = asyncHandler(async (req, res, next) => {
-
-
+exports.updateLabel = asyncHandler(async (req, res, next) => {
+    let labelId = req.params.labelId
+    const labelData = req.body
     try {
-        let modifier
-        modifier = await Modifier.findById(req.params.id);
-        if (!modifier) {
-            const error = new Error('Modifier  Not Found')
+        const label = await Label.findOne({ userId: { $in: req.user.id } }).exec();
+        if (!label) {
+            const error = new Error('label Not Found')
             error.statusCode = 404
             throw error
         }
-        modifier = await Modifier.findByIdAndUpdate(req.params.id, req.body, {
-            new: true,
-            runValidators: true,
-            useUnified: false,
-        });
+        let newBody = await label.itemLabel.filter((element) => {
+            element._id === labelId
+        })
+        newBody = labelData
+        await label.save()
         res.status(200).json({
             success: true,
-            message: "Modifier Update Successfully",
-            modifier,
+            message: "Updated  Successfully",
+            label
         });
     } catch (err) {
         if (!err.statusCode) {
@@ -65,7 +64,6 @@ exports.updateModifier = asyncHandler(async (req, res, next) => {
         next(err);
     }
 });
-
 //Delete Modifier By Id
 exports.deleteLabel = asyncHandler(async (req, res, next) => {
     let labelId = req.params.labelId
