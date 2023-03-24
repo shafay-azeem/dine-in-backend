@@ -28,7 +28,7 @@ router.route("/deleteAllModifiers").delete(deleteAllModifiers);
 //--LABEL
 router.route("/createLabel").post(isAuthenticatedUser, createLabel);
 router.route("/getLabels").get(isAuthenticatedUser, getLabels);
-router.route("/deleteLabel").delete(isAuthenticatedUser, deleteLabel);
+router.route("/deleteLabel/:labelId").delete(isAuthenticatedUser, deleteLabel);
 
 
 
