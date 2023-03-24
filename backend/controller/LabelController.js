@@ -38,23 +38,26 @@ exports.createLabel = asyncHandler(async (req, res, next) => {
 
 //Update Modifier By Id
 exports.updateLabel = asyncHandler(async (req, res, next) => {
-    let labelId = req.params.labelId
-    const labelData = req.body
+    const labelId = req.params.labelId;
+    const labelData = req.body;
     try {
         const label = await Label.findOne({ userId: { $in: req.user.id } }).exec();
         if (!label) {
-            const error = new Error('label Not Found')
-            error.statusCode = 404
-            throw error
+            const error = new Error('Label not found');
+            error.statusCode = 404;
+            throw error;
         }
-        let newBody = await label.itemLabel.filter((element) => {
-            element._id == labelId
-        })
-        newBody = labelData
-        await label.save()
+        const itemToUpdate = label.itemLabel.find((element) => element._id == labelId);
+        if (!itemToUpdate) {
+            const error = new Error('Label item not found');
+            error.statusCode = 404;
+            throw error;
+        }
+        Object.assign(itemToUpdate, labelData);
+        await label.save();
         res.status(200).json({
             success: true,
-            message: "Updated  Successfully",
+            message: "Updated successfully",
             label
         });
     } catch (err) {
