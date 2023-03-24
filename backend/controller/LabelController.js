@@ -119,7 +119,7 @@ exports.getSingleModifer = asyncHandler(async (req, res, next) => {
 //Get All Modifier ---Get
 exports.getLabels = asyncHandler(async (req, res, next) => {
     try {
-        const label = await Label.find({ userId: { $in: req.user.id } }).exec();
+        const label = await Label.findOne({ userId: { $in: req.user.id } }).exec();
         if (!label) {
             const error = new Error('label Not Found')
             error.statusCode = 404
