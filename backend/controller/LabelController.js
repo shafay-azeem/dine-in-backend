@@ -9,7 +9,8 @@ exports.createLabel = asyncHandler(async (req, res, next) => {
         let label = await Label.findOne({ userId: req.user._id })
         if (label) {
             label.itemLabel.push(labelData)
-            res.status(201).json({
+            label.save()
+            return res.status(201).json({
                 success: true,
                 message: "Label push Successfully",
                 label,
@@ -19,7 +20,7 @@ exports.createLabel = asyncHandler(async (req, res, next) => {
                 userId: req.user._id,
                 itemLabel: [labelData],
             });
-            res.status(201).json({
+            return res.status(201).json({
                 success: true,
                 message: "Label Created Successfully",
                 label,
