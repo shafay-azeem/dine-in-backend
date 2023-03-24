@@ -14,7 +14,11 @@ const tableSchema = new mongoose.Schema({
         TableName: {
             type: String,
             required: true
-        }
+        },
+        TableStatus: {
+            type: Boolean,
+            default: true
+        },
     }]
 });
 
