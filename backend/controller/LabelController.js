@@ -4,7 +4,8 @@ const asyncHandler = require("express-async-handler");
 //Create Menu ---Post
 exports.createLabel = asyncHandler(async (req, res, next) => {
     try {
-        const { labelData } = req.body;
+        const labelData = req.body
+
         let label = await Label.findOne({ userId: req.user._id })
         if (label) {
             label.itemLabel.push(labelData)

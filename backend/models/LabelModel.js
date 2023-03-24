@@ -10,7 +10,6 @@ const labelSchema = new mongoose.Schema({
         {
             label: {
                 type: String,
-
             },
             value: {
                 type: String,
