@@ -1,4 +1,5 @@
 const express = require("express");
+const { createLabel } = require("../controller/LabelController");
 const {
   createModifier,
   deleteModifierById,
@@ -21,6 +22,11 @@ router
   .route("/deleteModifierById/:id")
   .delete(isAuthenticatedUser, deleteModifierById);
 router.route("/updateModifier/:id").put(isAuthenticatedUser, updateModifier);
+
+
+
+
+router.route("/createLabel").put(isAuthenticatedUser, createLabel);
 
 router.route("/deleteAllModifiers").delete(deleteAllModifiers);
 
