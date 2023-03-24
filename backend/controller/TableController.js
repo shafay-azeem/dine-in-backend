@@ -156,3 +156,30 @@ exports.updateTableByTableId = asyncHandler(async (req, res, next) => {
         next(error)
     }
 });
+//-----------------------------------------
+exports.updateTableStatus = asyncHandler(async (req, res, next) => {
+    try {
+        let tableId = req.params.tableId
+        const status = req.body;
+        let tablesCount = await Table.findOne({ userId: { $in: req.user.id } });
+        if (!tablesCount) {
+            const error = new Error('Table not found')
+            error.statusCode = 404
+            throw error // it will end up in catch block followed by next thats why throw is used in async code
+        }
+        let table = tablesCount.Table.find((table) => table._id.toString() === tableId.toString())
+        Object.assign(table.TableStatus, status);
+        await tablesCount.save();
+
+        res.status(200).json({
+            success: true,
+            message: status ? "Table Enabled Successfully  " : "Table Disabled Successfully ",
+
+        });
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = 500
+        }
+        next(error)
+    }
+});
