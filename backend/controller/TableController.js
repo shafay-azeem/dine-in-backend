@@ -174,7 +174,7 @@ exports.updateTableStatus = asyncHandler(async (req, res, next) => {
 
         res.status(200).json({
             success: true,
-            message: status ? "Table Enabled Successfully" : "Table Disabled Successfully",
+            message: status.TableStatus ? "Table Enabled Successfully" : "Table Disabled Successfully",
 
         });
     } catch (error) {
