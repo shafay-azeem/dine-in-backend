@@ -78,7 +78,10 @@ exports.deleteLabel = asyncHandler(async (req, res, next) => {
         }
         await label.itemLabel.pull({ _id: labelId })
         await label.save()
-
+        res.status(200).json({
+            success: true,
+            message: "Deleted Successfully",
+        });
     } catch (err) {
         if (!err.statusCode) {
             err.statusCode = 500;
