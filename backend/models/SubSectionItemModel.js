@@ -44,10 +44,13 @@ const subSectionItemSchema = new mongoose.Schema({
   },
   itemWarning: [
     {
-      Alcohol: {
+      label: {
         type: String,
       },
-      AlcoholFree: {
+      value: {
+        type: String,
+      },
+      svg: {
         type: String,
       },
     },
